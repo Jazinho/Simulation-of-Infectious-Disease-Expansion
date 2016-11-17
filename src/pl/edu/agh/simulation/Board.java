@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.util.Random;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputListener;
@@ -64,6 +65,13 @@ public class Board extends JComponent implements MouseInputListener {
 		targets[3] = new Target(114, 55, false, 20);
 
 		// TODO pêtla for losuj¹ca wspó³rzêdne kilku agentów
+		Random ran = new Random();
+		for (int i = 0; i < 6; ++i){
+			int x = ran.nextInt(137);
+			int y = ran.nextInt(67);
+			cells[x][y].setPerson(new Person(Health.INFECTED));
+			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
+		}
 
 	}
 	
@@ -101,20 +109,20 @@ public class Board extends JComponent implements MouseInputListener {
 		for (x = 1; x < cells.length-1; ++x) {
 			for (y = 1; y < cells[x].length-1; ++y) {
 				if(cells[x][y].getCellType()==CellType.FREE){
-					g.setColor(new Color(1.0f, 1.0f, 1.0f ));
+					g.setColor(Color.WHITE);
 				}
 				else if (cells[x][y].getCellType()==CellType.WALL){
-					g.setColor(new Color(1.0f, 0.0f, 0.0f, 0.7f));
+					g.setColor(Color.BLACK);
 				}
 				else if (cells[x][y].getCellType()==CellType.PERSON){
 					if (cells[x][y].getPerson().getHealth() == Health.HEALTY)
-						g.setColor(new Color(0.0f, 1.0f, 0.0f, 0.7f));
+						g.setColor(Color.GREEN);
 					else if (cells[x][y].getPerson().getHealth() == Health.INFECTED)
-						g.setColor(new Color(0.0f, 1.0f, 0.0f, 0.7f));					// TODO zmieniæ kolory
+						g.setColor(Color.RED);
 					else if (cells[x][y].getPerson().getHealth() == Health.RESISTANT)
-						g.setColor(new Color(0.0f, 1.0f, 0.0f, 0.7f));					// TODO zmieniæ kolory
+						g.setColor(Color.BLUE);
 					else if (cells[x][y].getPerson().getHealth() == Health.SYMPTOMS)
-						g.setColor(new Color(0.0f, 1.0f, 0.0f, 0.7f));					// TODO zmieniæ kolory
+						g.setColor(Color.YELLOW);
 				}
 				g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
 			}
@@ -129,16 +137,15 @@ public class Board extends JComponent implements MouseInputListener {
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
 			if(editType==2){
-//				points[x][y].setPedestrian(true); // TODO wywo³aæ new Person w cells, ZDROWY
 				cells[x][y].setCellType(CellType.PERSON);
+				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-//				points[x][y].setPedestrian(true); // TODO wywo³aæ new Person w cells, CHORY
 				cells[x][y].setCellType(CellType.PERSON);
+				cells[x][y].setPerson(new Person(Health.INFECTED));
 			}
 			else{
 				cells[x][y].setCellType(CellType.values()[editType]);
-				System.out.println(x + " " + y);
 			}
 			this.repaint();
 		}
@@ -150,12 +157,12 @@ public class Board extends JComponent implements MouseInputListener {
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
 			if(editType==2){
-//				points[x][y].setPedestrian(true);   // TODO wywo³aæ new Person w cells, ZDROWY
 				cells[x][y].setCellType(CellType.PERSON);
+				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-//				points[x][y].setPedestrian(true);   // TODO wywo³aæ new Person w cells, CHORY
 				cells[x][y].setCellType(CellType.PERSON);
+				cells[x][y].setPerson(new Person(Health.INFECTED));
 			}
 			else{
 				cells[x][y].setCellType(CellType.values()[editType]);

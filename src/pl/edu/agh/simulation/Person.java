@@ -18,6 +18,13 @@ public class Person {
 		this.disease = null;
 	}
 	
+	public Person(Health health){
+		this.health = health;
+		this.disease = new Disease();
+		this.timeToRecover = disease.getTimeOfDisease();
+		this.target = null;
+	}
+	
 	public Health getHealth() {
 		return health;
 	}
