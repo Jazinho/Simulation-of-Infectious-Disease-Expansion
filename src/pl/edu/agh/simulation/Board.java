@@ -4,6 +4,10 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.swing.JComponent;
@@ -18,7 +22,7 @@ public class Board extends JComponent implements MouseInputListener {
 	private Cell[][] cells;
 	private Target[] targets;
 	private int size = 10;
-	private int editType = 0;   //  u¿ywane przy obs³udze myszy
+	private int editType = 0;   //  uzywane przy obsludze myszy
 
 	public void setEditType(int editType) {
 		this.editType = editType;
@@ -31,7 +35,7 @@ public class Board extends JComponent implements MouseInputListener {
 		addMouseMotionListener(this);
 		setBackground(Color.WHITE);
 		setOpaque(false);
-		initialize(initWidth, initHeight); // tworzy tablice punktów o rozmiarze 137 x 67
+		initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze 137 x 67
 	}
 
 	public void iteration() {
@@ -51,20 +55,55 @@ public class Board extends JComponent implements MouseInputListener {
 		this.repaint();
 	}
 
-	private void initialize(int height, int width) {   // tworzy tablice punktów o rozmiarze 137 x 67
+	private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
 		cells = new Cell[width][height];
 
+		BufferedReader br = null;
+		String everything = null;
+
+		try {
+			br = new BufferedReader(new FileReader("mapa.txt"));
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+		}
+
+		try {
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
+
+			while (line != null) {
+				sb.append(line);
+				//sb.append(System.lineSeparator());
+				line = br.readLine();
+			}
+			everything = sb.toString();
+		}catch(IOException e){
+			e.printStackTrace();
+		} finally {
+			try {
+				br.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+
 		for (int x = 0; x < cells.length; ++x)
-			for (int y = 0; y < cells[x].length; ++y)
+			for (int y = 0; y < cells[x].length; ++y){
 				cells[x][y] = new Cell(x,y);
-		
+				if(everything.charAt(y*137+x) == '1'){
+					cells[x][y].setCellType(CellType.WALL);
+				}
+			}
+
+
+		//TODO targety moglyby byc wczytywane z Targets.json
 		targets = new Target[4];
 		targets[0] = new Target(12, 10, false, 5);
 		targets[1] = new Target(119, 11, false, 10);
 		targets[2] = new Target(13, 56, false, 15);
 		targets[3] = new Target(114, 55, false, 20);
 
-		// TODO pêtla for losuj¹ca wspó³rzêdne kilku agentów
+		// TODO petla for losujuca wsporzedne kilku agentow
 		Random ran = new Random();
 		for (int i = 0; i < 6; ++i){
 			int x = ran.nextInt(137);
@@ -131,7 +170,7 @@ public class Board extends JComponent implements MouseInputListener {
 
 	}
 	
-// Obs³uga myszy zostawiona w celu mo¿liwoœci tworzenia nowych agentów w czasie trwania symulacji
+// Obsluga myszy zostawiona w celu mozliwosci tworzenia nowych agentow w czasie trwania symulacji
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
@@ -151,7 +190,7 @@ public class Board extends JComponent implements MouseInputListener {
 		}
 	}
 
-	// chyba wystarczy zostawiæ samo clicked, ale narazie niech siedzi
+	// chyba wystarczy zostawic samo clicked, ale narazie niech siedzi
 	public void mouseDragged(MouseEvent e) {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
