@@ -17,12 +17,13 @@ import pl.edu.agh.simulation.Cell.CellType;
 import pl.edu.agh.simulation.Person.Health;
 
 public class Board extends JComponent implements MouseInputListener {
-	
-	private static final long serialVersionUID = 1L;
+
 	private Cell[][] cells;
 	private Target[] targets;
 	private int size = 10;
 	private int editType = 0;   //  uzywane przy obsludze myszy
+
+	//TODO wszystko co z myszą jest do wywalenia - zbyt przypomina kod Porzyckiego
 
 	public void setEditType(int editType) {
 		this.editType = editType;
@@ -57,7 +58,6 @@ public class Board extends JComponent implements MouseInputListener {
 
 	private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
 		cells = new Cell[width][height];
-
 		BufferedReader br = null;
 		String everything = null;
 
@@ -70,10 +70,8 @@ public class Board extends JComponent implements MouseInputListener {
 		try {
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
-
 			while (line != null) {
 				sb.append(line);
-				//sb.append(System.lineSeparator());
 				line = br.readLine();
 			}
 			everything = sb.toString();
@@ -95,7 +93,6 @@ public class Board extends JComponent implements MouseInputListener {
 				}
 			}
 
-
 		//TODO targety moglyby byc wczytywane z Targets.json
 		targets = new Target[4];
 		targets[0] = new Target(12, 10, false, 5);
@@ -111,7 +108,6 @@ public class Board extends JComponent implements MouseInputListener {
 			cells[x][y].setPerson(new Person(Health.INFECTED));
 			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
 		}
-
 	}
 	
 	private void calculateField(){
@@ -175,17 +171,14 @@ public class Board extends JComponent implements MouseInputListener {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
+			cells[x][y].setCellType(mapToCellType(editType));
 			if(editType==2){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person(Health.INFECTED));
 			}
-			else{
-				cells[x][y].setCellType(CellType.values()[editType]);
-			}
+
 			this.repaint();
 		}
 	}
@@ -195,16 +188,12 @@ public class Board extends JComponent implements MouseInputListener {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
+			cells[x][y].setCellType(mapToCellType(editType));
 			if(editType==2){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person(Health.INFECTED));
-			}
-			else{
-				cells[x][y].setCellType(CellType.values()[editType]);
 			}
 			this.repaint();
 		}
@@ -228,4 +217,11 @@ public class Board extends JComponent implements MouseInputListener {
 	public void mousePressed(MouseEvent e) {
 	}
 
+	private CellType mapToCellType(int param){
+		switch (param){
+			case 1: return CellType.WALL;
+			case 2: return CellType.PERSON;
+			default: return CellType.FREE;
+		}
+	}
 }
