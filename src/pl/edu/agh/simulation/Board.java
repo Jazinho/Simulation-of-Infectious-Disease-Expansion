@@ -29,7 +29,7 @@ public class Board extends JComponent implements MouseInputListener {
 		int initHeight = (height / size) + 1;
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		setBackground(Color.WHITE);
+		setBackground(Color.WHITE); //rasista
 		setOpaque(false);
 		initialize(initWidth, initHeight); // tworzy tablice punktów o rozmiarze 137 x 67
 	}
@@ -58,17 +58,17 @@ public class Board extends JComponent implements MouseInputListener {
 			for (int y = 0; y < cells[x].length; ++y)
 				cells[x][y] = new Cell(x,y);
 		
-		targets = new Target[4];
-		targets[0] = new Target(12, 10, false, 5);
-		targets[1] = new Target(119, 11, false, 10);
-		targets[2] = new Target(13, 56, false, 15);
-		targets[3] = new Target(114, 55, false, 20);
-
+		targets = new Target[]{
+		new Target(12, 10, false, 5),
+		new Target(119, 11, false, 10),
+		new Target(13, 56, false, 15),
+		new Target(114, 55, false, 20)
+		};
 		// TODO pêtla for losuj¹ca wspó³rzêdne kilku agentów
 		Random ran = new Random();
 		for (int i = 0; i < 6; ++i){
-			int x = ran.nextInt(137);
-			int y = ran.nextInt(67);
+			int x = ran.nextInt(136);
+			int y = ran.nextInt(66);
 			cells[x][y].setPerson(new Person(Health.INFECTED));
 			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
 		}
