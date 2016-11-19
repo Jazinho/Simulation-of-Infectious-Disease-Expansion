@@ -4,6 +4,11 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JComponent;
@@ -13,31 +18,30 @@ import pl.edu.agh.simulation.Cell.CellType;
 import pl.edu.agh.simulation.Person.Health;
 
 public class Board extends JComponent implements MouseInputListener {
-	
-	private static final long serialVersionUID = 1L;
-	private Cell[][] cells;
-	private Target[] targets;
-	private int size = 10;
-	private int editType = 0;   //  u¿ywane przy obs³udze myszy
 
-	public void setEditType(int editType) {
-		this.editType = editType;
-	}
+	private Cell[][] cells;
+	public static Target[] targets;
+	private int size = 10;
+	private int editType = 0;   //  uzywane przy obsludze myszy
+
+	//TODO wszystko co z mysz¹ jest do wywalenia
 
 	public Board(int width, int height) {
 		int initWidth = (width / size) + 1;
 		int initHeight = (height / size) + 1;
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		setBackground(Color.WHITE); //rasista
+		setBackground(Color.WHITE);
 		setOpaque(false);
-		initialize(initWidth, initHeight); // tworzy tablice punktów o rozmiarze 137 x 67
+		initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze 137 x 67
 	}
 
 	public void iteration() {
 		for (int x = 1; x < cells.length - 1; ++x)
 			for (int y = 1; y < cells[x].length - 1; ++y)
-				cells[x][y].move(targets);
+				if(cells[x][y].getCellType() == CellType.PERSON){
+					cells[x][y].move();
+				}
 		this.repaint();
 		
 	}
@@ -51,28 +55,58 @@ public class Board extends JComponent implements MouseInputListener {
 		this.repaint();
 	}
 
-	private void initialize(int height, int width) {   // tworzy tablice punktów o rozmiarze 137 x 67
+	private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
 		cells = new Cell[width][height];
+		BufferedReader br = null;
+		String everything = null;
 
-		for (int x = 0; x < cells.length; ++x)
-			for (int y = 0; y < cells[x].length; ++y)
-				cells[x][y] = new Cell(x,y);
-		
-		targets = new Target[]{
-		new Target(12, 10, false, 5),
-		new Target(119, 11, false, 10),
-		new Target(13, 56, false, 15),
-		new Target(114, 55, false, 20)
-		};
-		// TODO pêtla for losuj¹ca wspó³rzêdne kilku agentów
-		Random ran = new Random();
-		for (int i = 0; i < 6; ++i){
-			int x = ran.nextInt(136);
-			int y = ran.nextInt(66);
-			cells[x][y].setPerson(new Person(Health.INFECTED));
-			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
+		try {
+			br = new BufferedReader(new FileReader("mapa.txt"));
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
 		}
 
+		try {
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
+			while (line != null) {
+				sb.append(line);
+				line = br.readLine();
+			}
+			everything = sb.toString();
+		}catch(IOException e){
+			e.printStackTrace();
+		} finally {
+			try {
+				br.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+
+		for (int x = 0; x < cells.length; ++x) {
+			for (int y = 0; y < cells[x].length; ++y) {
+				cells[x][y] = new Cell(x, y);
+				if (everything.charAt(y * 137 + x) == '1') {
+					cells[x][y].setCellType(CellType.WALL);
+				}
+			}
+		}
+
+		for (int x = 0; x < cells.length; ++x) {
+			for (int y = 0; y < cells[x].length; ++y) {
+				if(x>0 && x< 136 && y>0 && y<66) cells[x][y].setNeighbors(generateNeighbours(x,y));
+			}
+		}
+
+		targets = new Target[4];
+		targets[0] = new Target(12, 10, false, 5);
+		targets[1] = new Target(119, 11, false, 10);
+		targets[2] = new Target(13, 56, false, 15);
+		targets[3] = new Target(114, 55, false, 20);
+
+		// TODO petla for losujuca wsporzedne kilku agentow
+		generateAgents();
 	}
 	
 	private void calculateField(){
@@ -128,44 +162,40 @@ public class Board extends JComponent implements MouseInputListener {
 			}
 		}
 		this.repaint();
+	}
 
+	public void setEditType(int editType) {
+		this.editType = editType;
 	}
 	
-// Obs³uga myszy zostawiona w celu mo¿liwoœci tworzenia nowych agentów w czasie trwania symulacji
+// Obsluga myszy zostawiona w celu mozliwosci tworzenia nowych agentow w czasie trwania symulacji
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
+			cells[x][y].setCellType(mapToCellType(editType));
 			if(editType==2){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person(Health.INFECTED));
 			}
-			else{
-				cells[x][y].setCellType(CellType.values()[editType]);
-			}
+
 			this.repaint();
 		}
 	}
 
-	// chyba wystarczy zostawiæ samo clicked, ale narazie niech siedzi
+	// chyba wystarczy zostawic samo clicked, ale narazie niech siedzi
 	public void mouseDragged(MouseEvent e) {
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
+			cells[x][y].setCellType(mapToCellType(editType));
 			if(editType==2){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person());
 			}
 			if(editType==3){
-				cells[x][y].setCellType(CellType.PERSON);
 				cells[x][y].setPerson(new Person(Health.INFECTED));
-			}
-			else{
-				cells[x][y].setCellType(CellType.values()[editType]);
 			}
 			this.repaint();
 		}
@@ -189,4 +219,47 @@ public class Board extends JComponent implements MouseInputListener {
 	public void mousePressed(MouseEvent e) {
 	}
 
+	private CellType mapToCellType(int param){
+		switch (param){
+			case 1: return CellType.WALL;
+			case 2: return CellType.PERSON;
+			default: return CellType.FREE;
+		}
+	}
+
+	public static Target generateTarget(){
+		Random ran = new Random();
+		return targets[ran.nextInt(3)]; //TODO losuje z zadanym prawdopodobienstwem ktorys z targetow
+	}
+
+	//s¹siedzi indeksowani s¹ kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
+	// poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poni¿sze dodanie wszystkich osmiu jest troche na wyrost
+	private ArrayList<Cell> generateNeighbours(int x, int y){
+		ArrayList<Cell> neighbours = new ArrayList();
+		neighbours.add(cells[x-1][y-1]);
+		neighbours.add(cells[x][y-1]);
+		neighbours.add(cells[x+1][y-1]);
+		neighbours.add(cells[x+1][y]);
+		neighbours.add(cells[x+1][y+1]);
+		neighbours.add(cells[x][y+1]);
+		neighbours.add(cells[x-1][y+1]);
+		neighbours.add(cells[x-1][y]);
+		return neighbours;
+	}
+
+	private void generateAgents(){
+		Random ran = new Random();
+		for (int i = 0; i < 1; i++){
+			int x=ran.nextInt(137);
+			int y=ran.nextInt(67);
+			while(cells[x][y].getCellType() != CellType.FREE) {
+				x=ran.nextInt(137);
+				y=ran.nextInt(67);
+			}
+			Person p = new Person(Health.INFECTED);
+			p.setTarget(generateTarget());
+			cells[x][y].setPerson(p);
+			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
+		}
+	}
 }
