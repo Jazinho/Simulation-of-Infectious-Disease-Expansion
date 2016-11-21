@@ -99,12 +99,13 @@ public class Board extends JComponent implements MouseInputListener {
 			}
 		}
 
-		targets = new Target[4];
-		targets[0] = new Target(12, 10, false, 5);
-		targets[1] = new Target(119, 11, false, 10);
-		targets[2] = new Target(13, 56, false, 15);
-		targets[3] = new Target(114, 55, false, 20);
-
+		targets = new Target[]{
+			new Target(12, 10, false, 5),
+			new Target(119, 11, false, 10),
+			new Target(13, 56, false, 15),
+			new Target(114, 55, false, 20)
+		};
+		
 		// TODO petla for losujuca wsporzedne kilku agentow
 		generateAgents();
 	}
@@ -229,13 +230,13 @@ public class Board extends JComponent implements MouseInputListener {
 
 	public static Target generateTarget(){
 		Random ran = new Random();
-		return targets[ran.nextInt(3)]; //TODO losuje z zadanym prawdopodobienstwem ktorys z targetow
+		return targets[ran.nextInt(targets.length)]; //TODO losuje z zadanym prawdopodobienstwem ktorys z targetow
 	}
 
 	//s¹siedzi indeksowani s¹ kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
 	// poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poni¿sze dodanie wszystkich osmiu jest troche na wyrost
 	private ArrayList<Cell> generateNeighbours(int x, int y){
-		ArrayList<Cell> neighbours = new ArrayList();
+		ArrayList<Cell> neighbours = new ArrayList<>();
 		neighbours.add(cells[x-1][y-1]);
 		neighbours.add(cells[x][y-1]);
 		neighbours.add(cells[x+1][y-1]);
@@ -249,17 +250,17 @@ public class Board extends JComponent implements MouseInputListener {
 
 	private void generateAgents(){
 		Random ran = new Random();
-		for (int i = 0; i < 1; i++){
-			int x=ran.nextInt(137);
-			int y=ran.nextInt(67);
+		for (int i = 0; i < 20; i++){
+			int x=ran.nextInt(136);
+			int y=ran.nextInt(66);
 			while(cells[x][y].getCellType() != CellType.FREE) {
-				x=ran.nextInt(137);
-				y=ran.nextInt(67);
+				x=ran.nextInt(136);
+				y=ran.nextInt(66);
 			}
 			Person p = new Person(Health.INFECTED);
 			p.setTarget(generateTarget());
 			cells[x][y].setPerson(p);
-			cells[x][y].setCellType(CellType.PERSON);          // TODO ale to jest chujowe
+			cells[x][y].setCellType(CellType.PERSON);
 		}
 	}
 }
