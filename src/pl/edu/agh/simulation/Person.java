@@ -10,12 +10,16 @@ public class Person {
 	private int timeToRecover;
 	private Target target;
 	private Disease disease;
+	private Node currentNode;
+	private Node lastNode;
 	
 	public Person(){
 		this.health = Health.HEALTY;
 		this.timeToRecover = 0;
 		this.target = null;
 		this.disease = null;
+		this.currentNode = null;
+		this.lastNode = null;
 	}
 	
 	public Person(Health health){
@@ -56,6 +60,20 @@ public class Person {
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
-	
+
+	public Node getCurrentNode() {
+		return currentNode;
+	}
+
+	public void setCurrentNode(Node currentNode) {
+		this.currentNode = currentNode;
+	}
+
+	public Node getLastNode() {
+		return lastNode;
+	}
+
+	public void setLastNode(Node lastNode) {
+		this.lastNode = lastNode;
+	}
 }
