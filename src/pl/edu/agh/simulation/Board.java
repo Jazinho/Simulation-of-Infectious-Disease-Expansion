@@ -18,8 +18,8 @@ import java.util.Random;
 public class Board extends JComponent implements MouseInputListener {
 
     public static Target[] targets;
-    private Cell[][] cells;
     public static Node[] nodes;
+    private Cell[][] cells;
     private int size = 10;
     private int editType = 0;   //  uzywane przy obsludze myszy
 
@@ -38,6 +38,10 @@ public class Board extends JComponent implements MouseInputListener {
     public static Target generateTarget() {
         Random ran = new Random();
         return targets[ran.nextInt(targets.length)]; //TODO losuje z zadanym prawdopodobienstwem ktorys z targetow
+    }
+
+    public static double calculateDistance(int fromX, int toX, int fromY, int toY) {
+        return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
     }
 
     public void iteration() {
@@ -103,7 +107,6 @@ public class Board extends JComponent implements MouseInputListener {
                 }
             }
         }
-
         connectNodes();
 
         for (int x = 0; x < cells.length; ++x) {
@@ -111,7 +114,6 @@ public class Board extends JComponent implements MouseInputListener {
                 if (x > 0 && x < 136 && y > 0 && y < 66) cells[x][y].setNeighbors(generateNeighbours(x, y));
             }
         }
-
         targets = new Target[]{
                 new Target(20, 60, false, 5),
                 new Target(100, 15, false, 10),
@@ -211,35 +213,6 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseMoved(MouseEvent e) {
-    }
-
-    public void componentHidden(ComponentEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    private CellType mapToCellType(int param) {
-        switch (param) {
-            case 1:
-                return CellType.WALL;
-            case 2:
-                return CellType.PERSON;
-            default:
-                return CellType.FREE;
-        }
-    }
-
     //s�siedzi indeksowani s� kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
     // poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poni�sze dodanie wszystkich osmiu jest troche na wyrost
     private ArrayList<Cell> generateNeighbours(int x, int y) {
@@ -268,7 +241,7 @@ public class Board extends JComponent implements MouseInputListener {
             }
             Person p = new Person(Health.INFECTED);
             p.setTarget(generateTarget());
-            p.setCurrentNode(findNearestNode(x,y));
+            p.setCurrentNode(findNearestNode(x, y));
             cells[x][y].setPerson(p);
             cells[x][y].setCellType(CellType.PERSON);
         }
@@ -287,9 +260,9 @@ public class Board extends JComponent implements MouseInputListener {
 
             while (up == false || right == false || down == false || left == false) {
                 if (up == false) {
-                    if(y_up < 1 || cells[x][y_up].getCellType() == CellType.WALL){
+                    if (y_up < 1 || cells[x][y_up].getCellType() == CellType.WALL) {
                         up = true;
-                    }else{
+                    } else {
                         if (cells[x][y_up].getCellType() == CellType.NODE) {
                             neighbourNodes.add(new Node(x, y_up));
                             up = true;
@@ -299,9 +272,9 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
                 if (down == false) {
-                    if(y_down > 65 || cells[x][y_down].getCellType() == CellType.WALL){
+                    if (y_down > 65 || cells[x][y_down].getCellType() == CellType.WALL) {
                         down = true;
-                    }else{
+                    } else {
                         if (cells[x][y_down].getCellType() == CellType.NODE) {
                             neighbourNodes.add(new Node(x, y_down));
                             down = true;
@@ -311,9 +284,9 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
                 if (right == false) {
-                    if(x_right > 135 || cells[x_right][y].getCellType() == CellType.WALL){
+                    if (x_right > 135 || cells[x_right][y].getCellType() == CellType.WALL) {
                         right = true;
-                    }else{
+                    } else {
                         if (cells[x_right][y].getCellType() == CellType.NODE) {
                             neighbourNodes.add(new Node(x_right, y));
                             right = true;
@@ -323,9 +296,9 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
                 if (left == false) {
-                    if(x_left < 1 || cells[x_left][y].getCellType() == CellType.WALL){
+                    if (x_left < 1 || cells[x_left][y].getCellType() == CellType.WALL) {
                         left = true;
-                    }else{
+                    } else {
                         if (cells[x_left][y].getCellType() == CellType.NODE) {
                             neighbourNodes.add(new Node(x_left, y));
                             left = true;
@@ -338,25 +311,49 @@ public class Board extends JComponent implements MouseInputListener {
             nodes[i].setNeighbourNodes(neighbourNodes);
         }
 
-        for(Node n:nodes){
+        for (Node n : nodes) {
             cells[n.getX()][n.getY()].setCellType(CellType.FREE);
         }
     }
 
-    private Node findNearestNode(int fromX, int fromY){
+    private Node findNearestNode(int fromX, int fromY) {
         Node nearest = nodes[0];
-        for(int i = 1;i<nodes.length;i++){
+        for (int i = 1; i < nodes.length; i++) {
             int x = nodes[i].getX();
             int y = nodes[i].getY();
-            if(calculateDistance(fromX,x,fromY,y) < calculateDistance(fromX,nearest.getX(),fromY,nearest.getY())){
+            if (calculateDistance(fromX, x, fromY, y) < calculateDistance(fromX, nearest.getX(), fromY, nearest.getY())) {
                 nearest = nodes[i];
             }
         }
         return nearest;
     }
 
-    public static double calculateDistance(int fromX, int toX, int fromY, int toY){
-        return Math.sqrt( Math.pow(fromX - toX,2) + Math.pow(fromY - toY,2));
+    public void mouseExited(MouseEvent e) {
     }
 
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseMoved(MouseEvent e) {
+    }
+
+    public void componentHidden(ComponentEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    private CellType mapToCellType(int param) {
+        switch (param) {
+            case 1:
+                return CellType.WALL;
+            case 2:
+                return CellType.PERSON;
+            default:
+                return CellType.FREE;
+        }
+    }
 }
