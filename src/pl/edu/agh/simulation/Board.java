@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+@SuppressWarnings("serial")
 public class Board extends JComponent implements MouseInputListener {
 
     public static Target[] targets;
@@ -33,11 +34,6 @@ public class Board extends JComponent implements MouseInputListener {
         setBackground(Color.WHITE);
         setOpaque(false);
         initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze 137 x 67
-    }
-
-    public static Target generateTarget() {
-        Random ran = new Random();
-        return targets[ran.nextInt(targets.length)]; //TODO losuje z zadanym prawdopodobienstwem ktorys z targetow
     }
 
     public static double calculateDistance(int fromX, int toX, int fromY, int toY) {
@@ -68,7 +64,7 @@ public class Board extends JComponent implements MouseInputListener {
         nodes = new Node[44];
         int nodeCounter = 0;
         BufferedReader br = null;
-        String everything = null;
+        String loadedMap = null;
 
         try {
             br = new BufferedReader(new FileReader("mapa.txt"));
@@ -83,7 +79,7 @@ public class Board extends JComponent implements MouseInputListener {
                 sb.append(line);
                 line = br.readLine();
             }
-            everything = sb.toString();
+            loadedMap = sb.toString();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -97,10 +93,10 @@ public class Board extends JComponent implements MouseInputListener {
         for (int x = 0; x < cells.length; ++x) {
             for (int y = 0; y < cells[x].length; ++y) {
                 cells[x][y] = new Cell(x, y);
-                if (everything.charAt(y * 137 + x) == '1') {
+                if (loadedMap.charAt(y * 137 + x) == '1') {
                     cells[x][y].setCellType(CellType.WALL);
                 }
-                if (everything.charAt(y * 137 + x) == 'N') {
+                if (loadedMap.charAt(y * 137 + x) == 'N') {
                     cells[x][y].setCellType(CellType.NODE);
                     nodes[nodeCounter] = new Node(x, y);
                     nodeCounter += 1;
@@ -187,10 +183,10 @@ public class Board extends JComponent implements MouseInputListener {
         if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
             cells[x][y].setCellType(mapToCellType(editType));
             if (editType == 2) {
-                cells[x][y].setPerson(new Person());
+                cells[x][y].setPerson(new Person(x, y));
             }
             if (editType == 3) {
-                cells[x][y].setPerson(new Person(Health.INFECTED));
+                cells[x][y].setPerson(new Person(Health.INFECTED, x, y));
             }
 
             this.repaint();
@@ -204,10 +200,10 @@ public class Board extends JComponent implements MouseInputListener {
         if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
             cells[x][y].setCellType(mapToCellType(editType));
             if (editType == 2) {
-                cells[x][y].setPerson(new Person());
+                cells[x][y].setPerson(new Person(x, y));
             }
             if (editType == 3) {
-                cells[x][y].setPerson(new Person(Health.INFECTED));
+                cells[x][y].setPerson(new Person(Health.INFECTED, x, y));
             }
             this.repaint();
         }
@@ -230,19 +226,16 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void generateAgents() {
         Random ran = new Random();
+        int x = ran.nextInt(136);
+        int y = ran.nextInt(66);
         for (int i = 0; i < 1; i++) {
-            //int x = ran.nextInt(136);
-            //int y = ran.nextInt(66);
-            int x = 130;
-            int y = 56;
+            //int x = 130;
+            //int y = 56;
             while (cells[x][y].getCellType() != CellType.FREE) {
                 x = ran.nextInt(136);
                 y = ran.nextInt(66);
             }
-            Person p = new Person(Health.INFECTED);
-            p.setTarget(generateTarget());
-            p.setCurrentNode(findNearestNode(x, y));
-            cells[x][y].setPerson(p);
+            cells[x][y].setPerson(new Person(Health.INFECTED,x,y));
             cells[x][y].setCellType(CellType.PERSON);
         }
     }
@@ -314,18 +307,6 @@ public class Board extends JComponent implements MouseInputListener {
         for (Node n : nodes) {
             cells[n.getX()][n.getY()].setCellType(CellType.FREE);
         }
-    }
-
-    private Node findNearestNode(int fromX, int fromY) {
-        Node nearest = nodes[0];
-        for (int i = 1; i < nodes.length; i++) {
-            int x = nodes[i].getX();
-            int y = nodes[i].getY();
-            if (calculateDistance(fromX, x, fromY, y) < calculateDistance(fromX, nearest.getX(), fromY, nearest.getY())) {
-                nearest = nodes[i];
-            }
-        }
-        return nearest;
     }
 
     public void mouseExited(MouseEvent e) {

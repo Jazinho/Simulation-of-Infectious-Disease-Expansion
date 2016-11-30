@@ -6,7 +6,7 @@ public class Cell {
 
     private ArrayList<Cell> neighbors;
     private CellType cellType;
-    private Person person;
+    private Person person;  // TODO zmieniæ, nie potrzebujemy tego, musi byæ poza
     private int x;
     private int y;
     public Cell() {
@@ -24,14 +24,10 @@ public class Cell {
     public void clear() {
     }
 
-    public boolean calcStaticField() {
-        return false;
-    }
-
     public void move() {
         //jesli nie ma ustalonego celu lub go osiagnieto to wylosuj nowy
         if (this.person.getTarget() == null || (x == person.getTarget().getCell().getX() && y == person.getTarget().getCell().getY())) {
-            this.person.setTarget(Board.generateTarget());
+            this.person.setTarget(Board.targets);
         }
         if (x == this.person.getCurrentNode().getX() && y == this.person.getCurrentNode().getY()) {
             Node lastOne = this.person.getCurrentNode();
@@ -152,8 +148,8 @@ public class Cell {
             if(newNode.getX()==this.person.getLastNode().getX() && newNode.getY()==this.person.getLastNode().getY()){
                 newNode = this.person.getCurrentNode().getNeighbourNodes().get(1);
             }
-            int targetX = this.person.getTarget().getCell().x;
-            int targetY = this.person.getTarget().getCell().y;
+            int targetX = this.person.getTarget().getCell().getX();
+            int targetY = this.person.getTarget().getCell().getY();
             for (int i = 1; i < this.person.getCurrentNode().getNeighbourNodes().size(); i++) {
                 int checkedX = this.person.getCurrentNode().getNeighbourNodes().get(i).getX();
                 int checkedY = this.person.getCurrentNode().getNeighbourNodes().get(i).getY();
