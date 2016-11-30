@@ -20,7 +20,8 @@ public class Board extends JComponent implements MouseInputListener {
 
     public static Target[] targets;
     public static Node[] nodes;
-    private Cell[][] cells;
+    private ArrayList<Person> persons;
+    public static Cell[][] cells;
     private int size = 10;
     private int editType = 0;   //  uzywane przy obsludze myszy
 
@@ -41,13 +42,10 @@ public class Board extends JComponent implements MouseInputListener {
     }
 
     public void iteration() {
-        for (int x = 1; x < cells.length - 1; ++x)
-            for (int y = 1; y < cells[x].length - 1; ++y)
-                if (cells[x][y].getCellType() == CellType.PERSON) {
-                    cells[x][y].move();
-                }
+        for (int x = 0; x < persons.size(); ++x){
+        	persons.get(x).move();
+        }
         this.repaint();
-
     }
 
     public void clear() {
@@ -55,13 +53,13 @@ public class Board extends JComponent implements MouseInputListener {
             for (int y = 0; y < cells[x].length; ++y) {
                 cells[x][y].clear();
             }
-        calculateField();
         this.repaint();
     }
 
     private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
         cells = new Cell[width][height];
         nodes = new Node[44];
+        persons = new ArrayList<Person>();
         int nodeCounter = 0;
         BufferedReader br = null;
         String loadedMap = null;
@@ -119,9 +117,6 @@ public class Board extends JComponent implements MouseInputListener {
         generateAgents();
     }
 
-    private void calculateField() {
-    }
-
     protected void paintComponent(Graphics g) {
         if (isOpaque()) {
             g.setColor(getBackground());
@@ -157,19 +152,28 @@ public class Board extends JComponent implements MouseInputListener {
                 } else if (cells[x][y].getCellType() == CellType.WALL) {
                     g.setColor(Color.BLACK);
                 } else if (cells[x][y].getCellType() == CellType.PERSON) {
-                    if (cells[x][y].getPerson().getHealth() == Health.HEALTY)
+                    if (getPerson(x, y).getHealth() == Health.HEALTY)
                         g.setColor(Color.GREEN);
-                    else if (cells[x][y].getPerson().getHealth() == Health.INFECTED)
+                    else if (getPerson(x, y).getHealth() == Health.INFECTED)
                         g.setColor(Color.RED);
-                    else if (cells[x][y].getPerson().getHealth() == Health.RESISTANT)
+                    else if (getPerson(x, y).getHealth() == Health.RESISTANT)
                         g.setColor(Color.BLUE);
-                    else if (cells[x][y].getPerson().getHealth() == Health.SYMPTOMS)
+                    else if (getPerson(x, y).getHealth() == Health.SYMPTOMS)
                         g.setColor(Color.YELLOW);
                 }
                 g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
             }
         }
         this.repaint();
+    }
+    
+    public Person getPerson(int x, int y){
+    	for(int it = 0; it < persons.size(); it++){
+    		if(persons.get(it).getX() == x && persons.get(it).getY() == y){
+    			return persons.get(it);
+    		}
+    	}
+    	return null;
     }
 
     public void setEditType(int editType) {
@@ -183,10 +187,10 @@ public class Board extends JComponent implements MouseInputListener {
         if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
             cells[x][y].setCellType(mapToCellType(editType));
             if (editType == 2) {
-                cells[x][y].setPerson(new Person(x, y));
+                persons.add(new Person(x,y));
             }
             if (editType == 3) {
-                cells[x][y].setPerson(new Person(Health.INFECTED, x, y));
+                persons.add(new Person(Health.INFECTED, x, y));
             }
 
             this.repaint();
@@ -200,10 +204,10 @@ public class Board extends JComponent implements MouseInputListener {
         if ((x < cells.length) && (x > 0) && (y < cells[x].length) && (y > 0)) {
             cells[x][y].setCellType(mapToCellType(editType));
             if (editType == 2) {
-                cells[x][y].setPerson(new Person(x, y));
+            	persons.add(new Person(x,y));
             }
             if (editType == 3) {
-                cells[x][y].setPerson(new Person(Health.INFECTED, x, y));
+            	persons.add(new Person(Health.INFECTED, x, y));
             }
             this.repaint();
         }
@@ -235,7 +239,7 @@ public class Board extends JComponent implements MouseInputListener {
                 x = ran.nextInt(136);
                 y = ran.nextInt(66);
             }
-            cells[x][y].setPerson(new Person(Health.INFECTED,x,y));
+            persons.add(new Person(Health.INFECTED, x, y));
             cells[x][y].setCellType(CellType.PERSON);
         }
     }
@@ -337,4 +341,5 @@ public class Board extends JComponent implements MouseInputListener {
                 return CellType.FREE;
         }
     }
+    
 }
