@@ -7,9 +7,9 @@ public class Disease {
 	private int timeOfDisease;
 	
 	public Disease() {
-		this.spreadingTime = 50;
+		this.spreadingTime = 5;
 		this.possibilityOfSpreading = 0.1;
-		this.timeOfDisease = 80;
+		this.timeOfDisease = 20;
 	}
 	
 	public int getSpreadingTime() {
