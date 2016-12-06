@@ -7,7 +7,7 @@ import pl.edu.agh.simulation.Cell.CellType;
 public class Person {
 
 	public enum Health{
-		HEALTY, INFECTED, SYMPTOMS, RESISTANT
+        HEALTHY, INFECTED, SYMPTOMS, RESISTANT
 	}
 	
 	private int x;
@@ -22,7 +22,7 @@ public class Person {
 	public Person(int x, int y){
 		this.x = x;
 		this.y = y;
-		this.health = Health.HEALTY;
+		this.health = Health.HEALTHY;
 		this.disease = null;
 		this.timeToRecover = 0;
 		this.setTarget(Board.targets);
