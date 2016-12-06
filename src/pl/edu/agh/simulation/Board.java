@@ -24,6 +24,7 @@ public class Board extends JComponent implements MouseInputListener {
     public static Cell[][] cells;
     private int size = 10;
     private int editType = 0;   //  uzywane przy obsludze myszy
+    private int NUMBER_OF_AGENTS = 20;
 
     //TODO wszystko co z myszï¿½ jest do wywalenia
 
@@ -111,8 +112,8 @@ public class Board extends JComponent implements MouseInputListener {
         targets = new Target[]{
                 new Target(20, 60, false, 5),
                 new Target(100, 15, false, 10),
-                //new Target(13, 56, false, 15),
-                //new Target(114, 55, false, 20)
+                new Target(13, 56, false, 15),
+                new Target(114, 55, false, 20)
         };
         generateAgents();
     }
@@ -152,7 +153,7 @@ public class Board extends JComponent implements MouseInputListener {
                 } else if (cells[x][y].getCellType() == CellType.WALL) {
                     g.setColor(Color.BLACK);
                 } else if (cells[x][y].getCellType() == CellType.PERSON) {
-                    if (getPerson(x, y).getHealth() == Health.HEALTY)
+                    if (getPerson(x, y).getHealth() == Health.HEALTHY)
                         g.setColor(Color.GREEN);
                     else if (getPerson(x, y).getHealth() == Health.INFECTED)
                         g.setColor(Color.RED);
@@ -215,7 +216,7 @@ public class Board extends JComponent implements MouseInputListener {
 
     //sï¿½siedzi indeksowani sï¿½ kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
     // poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poniï¿½sze dodanie wszystkich osmiu jest troche na wyrost
-    // TODO w momencie, gdy agent znajduje siê przy bandzie, to generuje s¹siadów poza map¹ i leci IndexOutOfBoundsException
+    // TODO w momencie, gdy agent znajduje siï¿½ przy bandzie, to generuje sï¿½siadï¿½w poza mapï¿½ i leci IndexOutOfBoundsException
     private ArrayList<Cell> generateNeighbours(int x, int y) {
         ArrayList<Cell> neighbours = new ArrayList<>();
         neighbours.add(cells[x - 1][y - 1]);
@@ -233,14 +234,18 @@ public class Board extends JComponent implements MouseInputListener {
         Random ran = new Random();
         int x = ran.nextInt(136);
         int y = ran.nextInt(66);
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
             //int x = 130;
             //int y = 56;
             while (cells[x][y].getCellType() != CellType.FREE) {
                 x = ran.nextInt(136);
                 y = ran.nextInt(66);
             }
-            persons.add(new Person(Health.INFECTED, x, y));
+            if(i % 10 == 0 ){
+                persons.add(new Person(Health.INFECTED, x, y));
+            }else{
+                persons.add(new Person(Health.HEALTHY, x, y));
+            }
             cells[x][y].setCellType(CellType.PERSON);
         }
     }
