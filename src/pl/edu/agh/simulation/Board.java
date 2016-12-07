@@ -245,14 +245,12 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void generateAgents() {
         Random ran = new Random();
-        int x = ran.nextInt(136);
-        int y = ran.nextInt(66);
+        int x = ran.nextInt(135) +1;
+        int y = ran.nextInt(65) +1;
         for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
-            //int x = 130;
-            //int y = 56;
             while (cells[x][y].getCellType() != CellType.FREE) {
-                x = ran.nextInt(136);
-                y = ran.nextInt(66);
+                x = ran.nextInt(135)+1;
+                y = ran.nextInt(65)+1;
             }
             if(i % 10 == 0 ){
                 persons.add(new Person(Health.INFECTED, x, y));
