@@ -227,9 +227,6 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
-    //s�siedzi indeksowani s� kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
-    // poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poni�sze dodanie wszystkich osmiu jest troche na wyrost
-    // TODO w momencie, gdy agent znajduje si� przy bandzie, to generuje s�siad�w poza map� i leci IndexOutOfBoundsException
     private ArrayList<Cell> generateNeighbours(int x, int y) {
         ArrayList<Cell> neighbours = new ArrayList<>();
         neighbours.add(cells[x - 1][y - 1]);
