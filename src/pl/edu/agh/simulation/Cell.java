@@ -8,6 +8,7 @@ public class Cell {
     private CellType cellType;
     private int x;
     private int y;
+    private int timeOfContamination;
     public Cell() {
         cellType = CellType.FREE;
         neighbors = new ArrayList<Cell>();
@@ -63,4 +64,11 @@ public class Cell {
         FREE, WALL, PERSON, NODE;
     }
 
+    public int getTimeOfContamination() {
+        return timeOfContamination;
+    }
+
+    public void setTimeOfContamination(int timeOfContamination) {
+        this.timeOfContamination = timeOfContamination;
+    }
 }

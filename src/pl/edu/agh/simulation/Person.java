@@ -7,24 +7,28 @@ import pl.edu.agh.simulation.Cell.CellType;
 public class Person {
 
 	public enum Health{
-		HEALTY, INFECTED, SYMPTOMS, RESISTANT
+        HEALTHY, INFECTED, SYMPTOMS, RESISTANT
 	}
 	
 	private int x;
 	private int y;
 	private Health health;
+    private int timeToInfect;
+    private int timeToIncubate;
 	private int timeToRecover;
+    private int timeOfResistance;
 	private Target target;
-	private Disease disease;
 	private Node currentNode;
 	private Node lastNode;
 	
 	public Person(int x, int y){
 		this.x = x;
 		this.y = y;
-		this.health = Health.HEALTY;
-		this.disease = null;
+		this.health = Health.HEALTHY;
+        this.timeToInfect=0;
+        this.timeToIncubate=0;
 		this.timeToRecover = 0;
+        this.timeOfResistance = 0;
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = currentNode;
@@ -34,8 +38,10 @@ public class Person {
 		this.x = x;
 		this.y = y;
 		this.health = health;
-		this.disease = new Disease();
-		this.timeToRecover = disease.getTimeOfDisease();
+        this.timeToInfect=0;
+        this.timeToIncubate=0;
+		this.timeToRecover = 0;
+        this.timeOfResistance = 0;
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = currentNode;
@@ -123,6 +129,38 @@ public class Person {
                 }
             }
         }
+
+        if(this.health == Health.SYMPTOMS){ //YELLOW
+            contaminateNeighbourhood();
+            timeToRecover += 1;
+            if(timeToRecover == Disease.timeOfDisease) {
+                health = Health.RESISTANT;
+                timeToRecover = 0;
+            }
+        }else if(health == Health.INFECTED){ //RED
+            contaminateNeighbourhood();
+            timeToIncubate += 1;
+            if(timeToIncubate == Disease.incubationTime) {
+                health = Health.SYMPTOMS;
+                timeToIncubate = 0;
+            }
+        }else if(health == Health.HEALTHY){ //GREEN
+            if(Board.cells[getX()][getY()].getTimeOfContamination() > 0){ //jesli w komorce sa obecne bakterie
+                timeToInfect+=1;
+                if(timeToInfect == Disease.spreadingTime){
+                    health = Health.INFECTED;
+                    timeToInfect = 0;
+                }
+            }else{
+                if(timeToInfect>0) timeToInfect-=1;
+            }
+        }else{ //----------------------resistant BLUE
+            timeOfResistance += 1;
+            if(timeOfResistance == Disease.timeOfResistance) {
+                health = Health.HEALTHY;
+                timeOfResistance = 0;
+            }
+        }
     }
 
     private void makeStep(int direction) {
@@ -189,6 +227,20 @@ public class Person {
         }
         return returnedNode;
     }
+
+    private void contaminateNeighbourhood(){
+        int curX = this.getX();
+        int curY = this.getY();
+        Board.cells[curX][curY].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX][curY-1].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX][curY+1].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX-1][curY].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX-1][curY-1].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX-1][curY+1].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX+1][curY].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX+1][curY-1].setTimeOfContamination(Disease.cellContaminationTime);
+        Board.cells[curX+1][curY+1].setTimeOfContamination(Disease.cellContaminationTime);
+    }
 	
 	public int getX() {
 		return x;
@@ -231,14 +283,6 @@ public class Person {
         this.target =  targets[ran.nextInt(targets.length)];
 	}
 
-	public Disease getDisease() {
-		return disease;
-	}
-
-	public void setDisease(Disease disease) {
-		this.disease = disease;
-	}
-
 	public Node getCurrentNode() {
 		return currentNode;
 	}
@@ -266,4 +310,12 @@ public class Person {
 	public void setLastNode(Node lastNode) {
 		this.lastNode = lastNode;
 	}
+
+    public int getTimeToInfect() {
+        return timeToInfect;
+    }
+
+    public void setTimeToInfect(int timeToInfect) {
+        this.timeToInfect = timeToInfect;
+    }
 }
