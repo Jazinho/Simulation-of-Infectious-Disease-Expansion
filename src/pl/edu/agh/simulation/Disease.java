@@ -1,34 +1,12 @@
 package pl.edu.agh.simulation;
 
-public class Disease {
+public final class Disease {
 
-	private int spreadingTime;
-	private double possibilityOfSpreading;
-	private int timeOfDisease;
-	
-	public Disease() {
-		this.spreadingTime = 5;
-		this.possibilityOfSpreading = 0.1;
-		this.timeOfDisease = 20;
-	}
-	
-	public int getSpreadingTime() {
-		return spreadingTime;
-	}
-	public void setSpreadingTime(int spreadingTime) {
-		this.spreadingTime = spreadingTime;
-	}
-	public double getPossibilityOfSpreading() {
-		return possibilityOfSpreading;
-	}
-	public void setPossibilityOfSpreading(int possibilityOfSpreading) {
-		this.possibilityOfSpreading = possibilityOfSpreading;
-	}
-	public int getTimeOfDisease() {
-		return timeOfDisease;
-	}
-	public void setTimeOfDisease(int timeOfDisease) {
-		this.timeOfDisease = timeOfDisease;
-	}
+	public static int cellContaminationTime = 10;
+	public static int spreadingTime = 5;
+	public static int incubationTime = 10;
+	public static double possibilityOfSpreading=0.1;
+	public static int timeOfDisease=20;
+	public static int timeOfResistance=30;
 
 }
