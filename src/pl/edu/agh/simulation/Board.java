@@ -24,7 +24,7 @@ public class Board extends JComponent implements MouseInputListener {
     public static Cell[][] cells;
     private int size = 10;
     private int editType = 0;   //  uzywane przy obsludze myszy
-    private int NUMBER_OF_AGENTS = 20;
+    private int NUMBER_OF_AGENTS = 40;
 
     //TODO wszystko co z mysz� jest do wywalenia
 
@@ -43,6 +43,8 @@ public class Board extends JComponent implements MouseInputListener {
     }
 
     public void iteration() {
+        decreaseContamination();
+
         for (int x = 0; x < persons.size(); ++x){
         	persons.get(x).move();
         }
@@ -116,6 +118,17 @@ public class Board extends JComponent implements MouseInputListener {
                 new Target(114, 55, false, 20)
         };
         generateAgents();
+    }
+
+    private void decreaseContamination(){
+        for(int i=0;i<cells.length;i++){
+            for(int j=0;j<cells[i].length;j++){
+                if(cells[i][j].getTimeOfContamination() > 0){
+                    int x = cells[i][j].getTimeOfContamination();
+                    cells[i][j].setTimeOfContamination(x-1);
+                }
+            }
+        }
     }
 
     protected void paintComponent(Graphics g) {
