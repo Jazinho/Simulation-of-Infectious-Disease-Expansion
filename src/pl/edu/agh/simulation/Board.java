@@ -18,13 +18,13 @@ import java.util.Random;
 @SuppressWarnings("serial")
 public class Board extends JComponent implements MouseInputListener {
 
-    public static Target[] targets;
+    public static ArrayList<Target> targets;
     public static Node[] nodes;
     private ArrayList<Person> persons;
     public static Cell[][] cells;
     private int size = 10;
     private int editType = 0;   //  uzywane przy obsludze myszy
-    private int NUMBER_OF_AGENTS = 40;
+    private int NUMBER_OF_AGENTS = 150;
 
     //TODO wszystko co z myszï¿½ jest do wywalenia
 
@@ -39,15 +39,18 @@ public class Board extends JComponent implements MouseInputListener {
     }
 
     public static double calculateDistance(int fromX, int toX, int fromY, int toY) {
-        return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
+        return Math.hypot(fromX - toX, fromY - toY);
     }
 
     public void iteration() {
         decreaseContamination();
 
-        for (int x = 0; x < persons.size(); ++x){
-        	persons.get(x).move();
+        for (int it = 0; it < persons.size(); ++it){
+        	persons.get(it).move();
+        	
         }
+        System.out.println(persons.size());  ///////////////////////////////  TODO usunac
+
         this.repaint();
     }
 
@@ -61,8 +64,9 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
         cells = new Cell[width][height];
-        nodes = new Node[44];
+        nodes = new Node[49];
         persons = new ArrayList<Person>();
+        targets = new ArrayList<Target>();
         int nodeCounter = 0;
         BufferedReader br = null;
         String loadedMap = null;
@@ -105,18 +109,30 @@ public class Board extends JComponent implements MouseInputListener {
             }
         }
         connectNodes();
+        
+        for (int x = 0; x < cells.length; ++x) {
+            for (int y = 0; y < cells[x].length; ++y) {
+                if (loadedMap.charAt(y * 137 + x) == 'T') {
+                	targets.add(new Target(x, y, false, 100));
+                }
+            }
+        }
+
 
         for (int x = 0; x < cells.length; ++x) {
             for (int y = 0; y < cells[x].length; ++y) {
                 if (x > 0 && x < 136 && y > 0 && y < 66) cells[x][y].setNeighbors(generateNeighbours(x, y));
             }
         }
-        targets = new Target[]{
-                new Target(20, 60, false, 5),
-                new Target(100, 15, false, 10),
-                new Target(13, 56, false, 15),
-                new Target(114, 55, false, 20)
-        };
+//        targets = new Target[]{
+//                new Target(18, 5, false, 50),
+//                new Target(71, 3, false, 100),
+//                new Target(100, 3, false, 150),
+//                new Target(134, 27, false, 200),
+//                new Target(132, 58, false, 100),
+//                new Target(54, 64, false, 100),
+//                new Target(11, 52, false, 100)
+//        };
         generateAgents();
     }
 
@@ -159,6 +175,7 @@ public class Board extends JComponent implements MouseInputListener {
             y += gridSpace;
         }
 
+        
         for (x = 1; x < cells.length - 1; ++x) {
             for (y = 1; y < cells[x].length - 1; ++y) {
                 if (cells[x][y].getCellType() == CellType.FREE) {
@@ -169,14 +186,18 @@ public class Board extends JComponent implements MouseInputListener {
                     if (getPerson(x, y).getHealth() == Health.HEALTHY)
                         g.setColor(Color.GREEN);
                     else if (getPerson(x, y).getHealth() == Health.INFECTED)
-                        g.setColor(Color.RED);
+                        g.setColor(Color.YELLOW);
                     else if (getPerson(x, y).getHealth() == Health.RESISTANT)
                         g.setColor(Color.BLUE);
                     else if (getPerson(x, y).getHealth() == Health.SYMPTOMS)
-                        g.setColor(Color.YELLOW);
+                        g.setColor(Color.RED);
                 }
                 g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
             }
+        }
+        for(Target target : targets){
+        	g.setColor(Color.MAGENTA);
+        	g.fillRect((target.getCell().getX() * size) + 1, (target.getCell().getY() * size) + 1, (size - 1), (size - 1));
         }
         this.repaint();
     }
@@ -227,6 +248,9 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
+    //sï¿½siedzi indeksowani sï¿½ kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
+    // poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poniï¿½sze dodanie wszystkich osmiu jest troche na wyrost
+    // TODO w momencie, gdy agent znajduje siê przy bandzie, to generuje s¹siadów poza map¹ i leci IndexOutOfBoundsException
     private ArrayList<Cell> generateNeighbours(int x, int y) {
         ArrayList<Cell> neighbours = new ArrayList<>();
         neighbours.add(cells[x - 1][y - 1]);
@@ -249,11 +273,12 @@ public class Board extends JComponent implements MouseInputListener {
                 x = ran.nextInt(135)+1;
                 y = ran.nextInt(65)+1;
             }
-            if(i % 10 == 0 ){
-                persons.add(new Person(Health.INFECTED, x, y));
-            }else{
-                persons.add(new Person(Health.HEALTHY, x, y));
-            }
+//            if(i % 10 == 0 ){
+//                persons.add(new Person(Health.INFECTED, x, y));
+//            }else{
+//                persons.add(new Person(Health.HEALTHY, x, y));
+//            }
+            persons.add(new Person(Health.HEALTHY, x, y));
             cells[x][y].setCellType(CellType.PERSON);
         }
     }

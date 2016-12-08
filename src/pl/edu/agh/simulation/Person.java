@@ -1,5 +1,6 @@
 package pl.edu.agh.simulation;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import pl.edu.agh.simulation.Cell.CellType;
@@ -20,6 +21,7 @@ public class Person {
 	private Target target;
 	private Node currentNode;
 	private Node lastNode;
+	private int delayTime;
 	
 	public Person(int x, int y){
 		this.x = x;
@@ -32,6 +34,7 @@ public class Person {
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = currentNode;
+		this.delayTime = 0;
 	}
 	
 	public Person(Health health, int x, int y){
@@ -45,20 +48,44 @@ public class Person {
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = currentNode;
+		this.delayTime = 0;
 	}
 	
     public void move() {
-        //jesli nie ma ustalonego celu lub go osiagnieto to wylosuj nowy
-        if (this.getTarget() == null || (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY())) {
-            this.setTarget(Board.targets);
+    	
+        //jesli osiagnieto cel, to znajdz nowy
+//        if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) {
+////        	if(this.delayTime == 0){
+////            	this.delayTime = this.getTarget().getDelayTime(); // co do tego mam w¹tpliwoœci, czy on kiedyœ z tej pêtli wyjdzie :)
+////                this.setTarget(Board.targets);
+////        	}else{
+////        		this.delayTime--;
+////        		return;
+////        	}
+//        	this.setTarget(Board.targets);
+//        }
+
+        int destX;
+        int destY;
+        
+        if(this.getTarget().getNearestNode() == this.getLastNode()){
+        	destX = this.getTarget().getCell().getX();
+            destY = this.getTarget().getCell().getY();
+            if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) { // jeœli osiagnieto cel to znajdz nowy i wroc na trase do tego samego node'a
+            	this.setTarget(Board.targets);
+            	this.setCurrentNode(lastNode);
+            }
+        }else{
+            if (x == this.getCurrentNode().getX() && y == this.getCurrentNode().getY()) {
+                Node lastOne = this.getCurrentNode();
+                this.setCurrentNode(getNextNode());
+                this.setLastNode(lastOne);
+            }
+        	destX = this.getCurrentNode().getX();
+            destY = this.getCurrentNode().getY();
         }
-        if (x == this.getCurrentNode().getX() && y == this.getCurrentNode().getY()) {
-            Node lastOne = this.getCurrentNode();
-            this.setCurrentNode(getNextNode());
-            this.setLastNode(lastOne);
-        }
-        int destX = this.getCurrentNode().getX();
-        int destY = this.getCurrentNode().getY();
+        
+
 
         if (Math.abs(destX - x) > Math.abs(destY - y)) {
             if (destX < x) {
@@ -220,7 +247,7 @@ public class Person {
         }
         Node returnedNode=null;
 
-        for(int i =0;i<Board.nodes.length;i++){
+        for(int i = 0; i < Board.nodes.length;i++){
             if(newNode.getX()==Board.nodes[i].getX() && newNode.getY()==Board.nodes[i].getY()){
                 returnedNode = Board.nodes[i];
             }
@@ -278,9 +305,9 @@ public class Person {
 		return target;
 	}
 	
-	public void setTarget(Target[] targets) {
+	public void setTarget(ArrayList<Target> targets) {
         Random ran = new Random();
-        this.target =  targets[ran.nextInt(targets.length)];
+        this.target =  targets.get(ran.nextInt(targets.size()));
 	}
 
 	public Node getCurrentNode() {
@@ -291,7 +318,7 @@ public class Person {
 		this.currentNode = currentNode;
 	}
 
-	public Node setFirstNode(int fromX, int fromY) {
+	public static Node setFirstNode(int fromX, int fromY) {
         Node nearest = Board.nodes[0];
         for (int i = 1; i < Board.nodes.length; i++) {
             int x = Board.nodes[i].getX();

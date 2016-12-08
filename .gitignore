@@ -2,6 +2,9 @@
 .classpath
 .project
 
+# backup files 
+*.orig
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
