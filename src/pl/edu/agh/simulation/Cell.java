@@ -9,6 +9,7 @@ public class Cell {
     private int x;
     private int y;
     private int timeOfContamination;
+    
     public Cell() {
         cellType = CellType.FREE;
         neighbors = new ArrayList<Cell>();
