@@ -22,20 +22,20 @@ public class Board extends JComponent implements MouseInputListener {
     public static Node[] nodes;
     private ArrayList<Person> persons;
     public static Cell[][] cells;
-    private int size = 10;
+    private int size = 5;
     private int editType = 0;   //  uzywane przy obsludze myszy
     private int NUMBER_OF_AGENTS = 150;
 
-    //TODO wszystko co z myszï¿½ jest do wywalenia
+    //TODO wszystko co z mysza jest do wywalenia
 
     public Board(int width, int height) {
-        int initWidth = (width / size) + 1;
-        int initHeight = (height / size) + 1;
+        int initWidth = (width / size) + 2;
+        int initHeight = (height / size) + 2;
         addMouseListener(this);
         addMouseMotionListener(this);
         setBackground(Color.WHITE);
         setOpaque(false);
-        initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze 137 x 67
+        initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze 274 x 134
     }
 
     public static double calculateDistance(int fromX, int toX, int fromY, int toY) {
@@ -49,7 +49,6 @@ public class Board extends JComponent implements MouseInputListener {
         	persons.get(it).move();
         	
         }
-        System.out.println(persons.size());  ///////////////////////////////  TODO usunac
 
         this.repaint();
     }
@@ -62,9 +61,9 @@ public class Board extends JComponent implements MouseInputListener {
         this.repaint();
     }
 
-    private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 137 x 67
+    private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 274 x 134
         cells = new Cell[width][height];
-        nodes = new Node[49];
+        nodes = new Node[99];
         persons = new ArrayList<Person>();
         targets = new ArrayList<Target>();
         int nodeCounter = 0;
@@ -98,10 +97,10 @@ public class Board extends JComponent implements MouseInputListener {
         for (int x = 0; x < cells.length; ++x) {
             for (int y = 0; y < cells[x].length; ++y) {
                 cells[x][y] = new Cell(x, y);
-                if (loadedMap.charAt(y * 137 + x) == '1') {
+                if (loadedMap.charAt(y * 274 + x) == '1') {
                     cells[x][y].setCellType(CellType.WALL);
                 }
-                if (loadedMap.charAt(y * 137 + x) == 'N') {
+                if (loadedMap.charAt(y * 274 + x) == 'N') {
                     cells[x][y].setCellType(CellType.NODE);
                     nodes[nodeCounter] = new Node(x, y);
                     nodeCounter += 1;
@@ -112,7 +111,7 @@ public class Board extends JComponent implements MouseInputListener {
         
         for (int x = 0; x < cells.length; ++x) {
             for (int y = 0; y < cells[x].length; ++y) {
-                if (loadedMap.charAt(y * 137 + x) == 'T') {
+                if (loadedMap.charAt(y * 274 + x) == 'T') {
                 	targets.add(new Target(x, y, false, 100));
                 }
             }
@@ -121,18 +120,10 @@ public class Board extends JComponent implements MouseInputListener {
 
         for (int x = 0; x < cells.length; ++x) {
             for (int y = 0; y < cells[x].length; ++y) {
-                if (x > 0 && x < 136 && y > 0 && y < 66) cells[x][y].setNeighbors(generateNeighbours(x, y));
+                if (x > 0 && x < 273 && y > 0 && y < 133) cells[x][y].setNeighbors(generateNeighbours(x, y));
             }
         }
-//        targets = new Target[]{
-//                new Target(18, 5, false, 50),
-//                new Target(71, 3, false, 100),
-//                new Target(100, 3, false, 150),
-//                new Target(134, 27, false, 200),
-//                new Target(132, 58, false, 100),
-//                new Target(54, 64, false, 100),
-//                new Target(11, 52, false, 100)
-//        };
+
         generateAgents();
     }
 
@@ -248,9 +239,8 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
-    //sï¿½siedzi indeksowani sï¿½ kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
+    //sasiedzi indeksowani sa kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny, 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
     // poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi, takze poniï¿½sze dodanie wszystkich osmiu jest troche na wyrost
-    // TODO w momencie, gdy agent znajduje siê przy bandzie, to generuje s¹siadów poza map¹ i leci IndexOutOfBoundsException
     private ArrayList<Cell> generateNeighbours(int x, int y) {
         ArrayList<Cell> neighbours = new ArrayList<>();
         neighbours.add(cells[x - 1][y - 1]);
@@ -266,12 +256,12 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void generateAgents() {
         Random ran = new Random();
-        int x = ran.nextInt(135) +1;
-        int y = ran.nextInt(65) +1;
+        int x = ran.nextInt(273) +1;
+        int y = ran.nextInt(132) +1;
         for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
             while (cells[x][y].getCellType() != CellType.FREE) {
-                x = ran.nextInt(135)+1;
-                y = ran.nextInt(65)+1;
+                x = ran.nextInt(273)+1;
+                y = ran.nextInt(132)+1;
             }
 //            if(i % 10 == 0 ){
 //                persons.add(new Person(Health.INFECTED, x, y));
@@ -308,7 +298,7 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
                 if (down == false) {
-                    if (y_down > 65 || cells[x][y_down].getCellType() == CellType.WALL) {
+                    if (y_down > 132 || cells[x][y_down].getCellType() == CellType.WALL) {
                         down = true;
                     } else {
                         if (cells[x][y_down].getCellType() == CellType.NODE) {
@@ -320,7 +310,7 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
                 if (right == false) {
-                    if (x_right > 135 || cells[x_right][y].getCellType() == CellType.WALL) {
+                    if (x_right > 273 || cells[x_right][y].getCellType() == CellType.WALL) {
                         right = true;
                     } else {
                         if (cells[x_right][y].getCellType() == CellType.NODE) {
