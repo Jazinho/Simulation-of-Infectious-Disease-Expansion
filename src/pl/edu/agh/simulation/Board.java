@@ -24,7 +24,8 @@ public class Board extends JComponent implements MouseInputListener {
     public static Cell[][] cells;
     private int size = 5;
     private int editType = 0;   //  uzywane przy obsludze myszy
-    private int NUMBER_OF_AGENTS = 150;
+    private int NUMBER_OF_AGENTS = 350;
+    private int NUMBER_OF_NODES = 276;
 
     //TODO wszystko co z mysza jest do wywalenia
 
@@ -63,7 +64,7 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 274 x 134
         cells = new Cell[width][height];
-        nodes = new Node[99];
+        nodes = new Node[NUMBER_OF_NODES];
         persons = new ArrayList<Person>();
         targets = new ArrayList<Target>();
         int nodeCounter = 0;
@@ -256,11 +257,11 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void generateAgents() {
         Random ran = new Random();
-        int x = ran.nextInt(273) +1;
+        int x = ran.nextInt(272) +1;
         int y = ran.nextInt(132) +1;
         for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
             while (cells[x][y].getCellType() != CellType.FREE) {
-                x = ran.nextInt(273)+1;
+                x = ran.nextInt(272)+1;
                 y = ran.nextInt(132)+1;
             }
 //            if(i % 10 == 0 ){
