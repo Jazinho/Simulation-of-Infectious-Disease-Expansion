@@ -247,9 +247,9 @@ public class Person {
         }
         Node returnedNode=null;
 
-        for(int i = 0; i < Board.nodes.length;i++){
-            if(newNode.getX()==Board.nodes[i].getX() && newNode.getY()==Board.nodes[i].getY()){
-                returnedNode = Board.nodes[i];
+        for(int i = 0; i < Board.nodes.size();i++){
+            if(newNode.getX()==Board.nodes.get(i).getX() && newNode.getY()==Board.nodes.get(i).getY()){
+                returnedNode = Board.nodes.get(i);
             }
         }
         return returnedNode;
@@ -319,12 +319,12 @@ public class Person {
 	}
 
 	public static Node setFirstNode(int fromX, int fromY) {
-        Node nearest = Board.nodes[0];
-        for (int i = 1; i < Board.nodes.length; i++) {
-            int x = Board.nodes[i].getX();
-            int y = Board.nodes[i].getY();
+        Node nearest = Board.nodes.get(0);
+        for (int i = 1; i < Board.nodes.size(); i++) {
+            int x = Board.nodes.get(i).getX();
+            int y = Board.nodes.get(i).getY();
             if (Board.calculateDistance(fromX, x, fromY, y) < Board.calculateDistance(fromX, nearest.getX(), fromY, nearest.getY())) {
-                nearest = Board.nodes[i];
+                nearest = Board.nodes.get(i);
             }
         }
 		return nearest;

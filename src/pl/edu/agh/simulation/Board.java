@@ -13,19 +13,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 @SuppressWarnings("serial")
 public class Board extends JComponent implements MouseInputListener {
 
+	public static Integer[] staty = {0,0,0};
     public static ArrayList<Target> targets;
-    public static Node[] nodes;
+    public static ArrayList<Node> nodes;
     private ArrayList<Person> persons;
     public static Cell[][] cells;
     private int size = 5;
     private int editType = 0;   //  uzywane przy obsludze myszy
     private int NUMBER_OF_AGENTS = 350;
-    private int NUMBER_OF_NODES = 276;
 
     //TODO wszystko co z mysza jest do wywalenia
 
@@ -45,10 +46,16 @@ public class Board extends JComponent implements MouseInputListener {
 
     public void iteration() {
         decreaseContamination();
-
+        Arrays.fill(staty, 0);
         for (int it = 0; it < persons.size(); ++it){
         	persons.get(it).move();
-        	
+        	if(persons.get(it).getHealth() == Health.HEALTHY){
+        		staty[0]++;
+        	} else if(persons.get(it).getHealth() == Health.INFECTED || persons.get(it).getHealth() == Health.SYMPTOMS){
+        		staty[1]++;
+        	} else {
+        		staty[2]++;
+        	}
         }
 
         this.repaint();
@@ -64,10 +71,9 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void initialize(int height, int width) {   // tworzy tablice punktow o rozmiarze 274 x 134
         cells = new Cell[width][height];
-        nodes = new Node[NUMBER_OF_NODES];
+        nodes = new ArrayList<Node>();
         persons = new ArrayList<Person>();
         targets = new ArrayList<Target>();
-        int nodeCounter = 0;
         BufferedReader br = null;
         String loadedMap = null;
 
@@ -103,8 +109,7 @@ public class Board extends JComponent implements MouseInputListener {
                 }
                 if (loadedMap.charAt(y * 274 + x) == 'N') {
                     cells[x][y].setCellType(CellType.NODE);
-                    nodes[nodeCounter] = new Node(x, y);
-                    nodeCounter += 1;
+                    nodes.add(new Node(x, y));
                 }
             }
         }
@@ -275,10 +280,10 @@ public class Board extends JComponent implements MouseInputListener {
     }
 
     private void connectNodes() {
-        for (int i = 0; i < nodes.length; i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             boolean up = false, right = false, down = false, left = false;
-            int x = nodes[i].getX();
-            int y = nodes[i].getY();
+            int x = nodes.get(i).getX();
+            int y = nodes.get(i).getY();
             int y_up = y - 1;
             int y_down = y + 1;
             int x_right = x + 1;
@@ -335,7 +340,7 @@ public class Board extends JComponent implements MouseInputListener {
                     }
                 }
             }
-            nodes[i].setNeighbourNodes(neighbourNodes);
+            nodes.get(i).setNeighbourNodes(neighbourNodes);
         }
 
         for (Node n : nodes) {

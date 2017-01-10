@@ -1,4 +1,5 @@
 package pl.edu.agh.simulation;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.Timer;
@@ -19,7 +21,6 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private Timer timer;
 	private Board board;
 	private JButton start;
-	private JButton clear;
 	private JComboBox<Integer> drawType;
 	private JSlider pred;
 	private JFrame frame;
@@ -27,6 +28,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private final int maxDelay = 500;
 	private final int initDelay = 100;
 	private boolean running = false;
+	private JLabel statistics;
 
 	public GUI(JFrame jf) {
 		frame = jf;
@@ -44,25 +46,24 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		start.setActionCommand("Start");
 		start.addActionListener(this);
 
-		clear = new JButton("Reset");
-		clear.setActionCommand("clear");
-		clear.addActionListener(this);
-		
 		pred = new JSlider();
 		pred.setMinimum(0);
 		pred.setMaximum(maxDelay);
 		pred.addChangeListener(this);
 		pred.setValue(maxDelay - timer.getDelay());
-		
-		Integer[] comboBoxTypes = {0,1,2,3};     // puste pole, sciana, zdrowy, chory
+
+		Integer[] comboBoxTypes = { 0, 1, 2, 3 }; // puste pole, sciana, zdrowy,
+													// chory
 		drawType = new JComboBox<Integer>(comboBoxTypes);
 		drawType.addActionListener(this);
 		drawType.setActionCommand("drawType");
 
+		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: ");
+
 		buttonPanel.add(start);
-		buttonPanel.add(clear);
 		buttonPanel.add(drawType);
 		buttonPanel.add(pred);
+		buttonPanel.add(statistics);
 
 		board = new Board(660, 1360);
 		container.add(board, BorderLayout.CENTER);
@@ -70,6 +71,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]);
+
 		if (e.getSource().equals(timer)) {
 			iterNum++;
 			frame.setTitle("Disease simulation (" + Integer.toString(iterNum) + " iteration)");
@@ -85,21 +88,9 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 					start.setText("Start");
 				}
 				running = !running;
-				clear.setEnabled(true);
 
-			} else if (command.equals("clear")) {
-				iterNum = 0;
-				timer.stop();
-				start.setEnabled(true);
-				if(running){
-					running = !running;
-				}
-				board.clear();
-				frame.setTitle("Cellular Automata Toolbox");
-				start.setText("Start");
-			}
-			else if (command.equals("drawType")){
-				int newType = (Integer)drawType.getSelectedItem();
+			} else if (command.equals("drawType")) {
+				int newType = (Integer) drawType.getSelectedItem();
 				board.setEditType(newType);
 			}
 
@@ -108,5 +99,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 
 	public void stateChanged(ChangeEvent e) {
 		timer.setDelay(maxDelay - pred.getValue());
+		// tutaj zmieniam statystyki ???? TODO
+
 	}
 }
