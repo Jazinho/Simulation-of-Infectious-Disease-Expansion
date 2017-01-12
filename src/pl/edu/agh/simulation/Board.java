@@ -26,7 +26,7 @@ public class Board extends JComponent implements MouseInputListener {
     public static Cell[][] cells;
     private int size = 5;
     private int editType = 0;   //  uzywane przy obsludze myszy
-    private int NUMBER_OF_AGENTS = 350;
+    private int NUMBER_OF_AGENTS = 300;
 
     //TODO wszystko co z mysza jest do wywalenia
 
@@ -120,13 +120,8 @@ public class Board extends JComponent implements MouseInputListener {
                 if (loadedMap.charAt(y * 274 + x) == 'T') {
                 	targets.add(new Target(x, y, false, 100));
                 }
-            }
-        }
-
-
-        for (int x = 0; x < cells.length; ++x) {
-            for (int y = 0; y < cells[x].length; ++y) {
                 if (x > 0 && x < 273 && y > 0 && y < 133) cells[x][y].setNeighbors(generateNeighbours(x, y));
+
             }
         }
 
@@ -262,10 +257,10 @@ public class Board extends JComponent implements MouseInputListener {
 
     private void generateAgents() {
         Random ran = new Random();
-        int x = ran.nextInt(272) +1;
-        int y = ran.nextInt(132) +1;
+        int x = ran.nextInt(270) +2;
+        int y = ran.nextInt(130) +2;
         for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
-            while (cells[x][y].getCellType() != CellType.FREE) {
+            while (cells[x][y].getCellType() != CellType.FREE || isInterior(x,y)) {
                 x = ran.nextInt(272)+1;
                 y = ran.nextInt(132)+1;
             }
@@ -346,6 +341,28 @@ public class Board extends JComponent implements MouseInputListener {
         for (Node n : nodes) {
             cells[n.getX()][n.getY()].setCellType(CellType.FREE);
         }
+    }
+
+    private boolean isInterior(int x, int y){
+        boolean up=false, right=false, down=false, left=false;
+
+        for(int i=1; i<12;i++){
+            if((x+i) < 272) {
+                if (cells[x + i][y].getCellType() == CellType.WALL) right = true;
+            }
+            if((x - i) > 0) {
+                if (cells[x - i][y].getCellType() == CellType.WALL) left = true;
+            }
+            if((y - i) > 0) {
+                if (cells[x][y - i].getCellType() == CellType.WALL) down = true;
+            }
+            if((y + i) < 132) {
+                if (cells[x][y + i].getCellType() == CellType.WALL) up = true;
+            }
+        }
+        if((up && left && right) || (down && left && right) || (left && up && down) || (right && up && down)) return true;
+        if(cells[x][y-1].getCellType() == CellType.WALL && cells[x][y+1].getCellType()==CellType.WALL) return true;
+        return false;
     }
 
     public void mouseExited(MouseEvent e) {

@@ -6,6 +6,7 @@ public class Cell {
 
     private ArrayList<Cell> neighbors;
     private CellType cellType;
+    private boolean isInterior;
     private int x;
     private int y;
     private int timeOfContamination;
