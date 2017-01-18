@@ -1,16 +1,16 @@
 package pl.edu.agh.simulation;
 
+import pl.edu.agh.simulation.Cell.CellType;
+
 import java.util.ArrayList;
 import java.util.Random;
-
-import pl.edu.agh.simulation.Cell.CellType;
 
 public class Person {
 
 	public enum Health{
         HEALTHY, INFECTED, SYMPTOMS, RESISTANT
 	}
-	
+
 	private int x;
 	private int y;
 	private Health health;
@@ -22,7 +22,8 @@ public class Person {
 	private Node currentNode;
 	private Node lastNode;
 	private int delayTime;
-	
+    private ArrayList<Node> visitedNodes;
+
 	public Person(int x, int y){
 		this.x = x;
 		this.y = y;
@@ -33,10 +34,11 @@ public class Person {
         this.timeOfResistance = 0;
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
-		this.lastNode = currentNode;
+		this.lastNode = this.currentNode;
 		this.delayTime = 0;
+        this.visitedNodes = new ArrayList<>();
 	}
-	
+
 	public Person(Health health, int x, int y){
 		this.x = x;
 		this.y = y;
@@ -47,33 +49,23 @@ public class Person {
         this.timeOfResistance = 0;
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
-		this.lastNode = currentNode;
+		this.lastNode = this.currentNode;
 		this.delayTime = 0;
+        this.visitedNodes = new ArrayList<>();
 	}
-	
-    public void move() {
-    	
-        //jesli osiagnieto cel, to znajdz nowy
-//        if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) {
-////        	if(this.delayTime == 0){
-////            	this.delayTime = this.getTarget().getDelayTime(); // co do tego mam w¹tpliwoœci, czy on kiedyœ z tej pêtli wyjdzie :)
-////                this.setTarget(Board.targets);
-////        	}else{
-////        		this.delayTime--;
-////        		return;
-////        	}
-//        	this.setTarget(Board.targets);
-//        }
 
+    public void move() {
         int destX;
         int destY;
-        
+
         if(this.getTarget().getNearestNode() == this.getLastNode()){
         	destX = this.getTarget().getCell().getX();
             destY = this.getTarget().getCell().getY();
-            if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) { // jeœli osiagnieto cel to znajdz nowy i wroc na trase do tego samego node'a
+            // jesli osiagnieto cel to znajdz nowy i wroc na trase do tego samego node'a
+            if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) {
             	this.setTarget(Board.targets);
             	this.setCurrentNode(lastNode);
+                this.visitedNodes.clear();
             }
         }else{
             if (x == this.getCurrentNode().getX() && y == this.getCurrentNode().getY()) {
@@ -84,7 +76,6 @@ public class Person {
         	destX = this.getCurrentNode().getX();
             destY = this.getCurrentNode().getY();
         }
-        
 
 
         if (Math.abs(destX - x) > Math.abs(destY - y)) {
@@ -201,52 +192,35 @@ public class Person {
         }
     }
 
-/*
-	public void move(){
-		//jesli nie ma ustalonego celu lub go osiagnieto to wylosuj nowy
-		if(this.person.getTarget() == null || (x==person.getTarget().getCell().getX() && y==person.getTarget().getCell().getY()) ){
-			this.person.setTarget(Board.generateTarget());
-		}
-		int destX = person.getTarget().getCell().getX();
-		int destY = person.getTarget().getCell().getY();
-
-		if(Math.abs(destX - x) > Math.abs(destY - y)){
-			if(destX < x){
-				this.makeStep(7);
-			}else{
-				this.makeStep(3);
-			}
-		}else{
-			if(destY < y){
-				this.makeStep(1);
-			}else{
-				this.makeStep(5);
-			}
-		}
-	}
-*/
-
     private Node getNextNode() {
         Node newNode = this.getCurrentNode().getNeighbourNodes().get(0);
         if (this.getCurrentNode().getNeighbourNodes().size() > 1) {
-            if(newNode.getX()==this.getLastNode().getX() && newNode.getY()==this.getLastNode().getY()){
-                newNode = this.getCurrentNode().getNeighbourNodes().get(1);
-            }
             int targetX = this.getTarget().getCell().getX();
             int targetY = this.getTarget().getCell().getY();
-            for (int i = 1; i < this.getCurrentNode().getNeighbourNodes().size(); i++) {
+            double currentShorter = -1;
+            boolean selectedUnvisitedNode = false;
+
+            for (int i = 0; i < this.getCurrentNode().getNeighbourNodes().size(); i++) {
                 int checkedX = this.getCurrentNode().getNeighbourNodes().get(i).getX();
                 int checkedY = this.getCurrentNode().getNeighbourNodes().get(i).getY();
-                if(checkedX==this.getLastNode().getX() && checkedY==this.getLastNode().getY()){
-                    continue;
-                }
-                if (Board.calculateDistance(checkedX, targetX, checkedY, targetY) < Board.calculateDistance(newNode.getX(), targetX, newNode.getY(), targetY)) {
-                    newNode = this.getCurrentNode().getNeighbourNodes().get(i);
+                if( !wasVisited(checkedX, checkedY) ){
+                    if (Board.calculateDistance(checkedX, targetX, checkedY, targetY) < currentShorter || currentShorter == -1) {
+                        currentShorter = Board.calculateDistance(checkedX, targetX, checkedY, targetY);
+                        newNode = this.getCurrentNode().getNeighbourNodes().get(i);
+                        selectedUnvisitedNode = true;
+                    }
                 }
             }
-        }
-        Node returnedNode=null;
+            visitedNodes.add(newNode);
 
+            if(!selectedUnvisitedNode){
+                visitedNodes.clear();
+                visitedNodes.add(currentNode);
+                visitedNodes.add(lastNode);
+            }
+        }
+
+        Node returnedNode=null;
         for(int i = 0; i < Board.nodes.size();i++){
             if(newNode.getX()==Board.nodes.get(i).getX() && newNode.getY()==Board.nodes.get(i).getY()){
                 returnedNode = Board.nodes.get(i);
@@ -268,7 +242,16 @@ public class Person {
         Board.cells[curX+1][curY-1].setTimeOfContamination(Disease.cellContaminationTime);
         Board.cells[curX+1][curY+1].setTimeOfContamination(Disease.cellContaminationTime);
     }
-	
+
+    private boolean wasVisited(int x, int y){
+        for(Node node: visitedNodes){
+            if(node.getX() == x && node.getY() == y){
+                return true;
+            }
+        }
+        return false;
+    }
+
 	public int getX() {
 		return x;
 	}
@@ -288,23 +271,23 @@ public class Person {
 	public Health getHealth() {
 		return health;
 	}
-	
+
 	public void setHealth(Health health) {
 		this.health = health;
 	}
-	
+
 	public int getTimeToRecover() {
 		return timeToRecover;
 	}
-	
+
 	public void setTimeToRecover(int timeToRecover) {
 		this.timeToRecover = timeToRecover;
 	}
-	
+
 	public Target getTarget() {
 		return target;
 	}
-	
+
 	public void setTarget(ArrayList<Target> targets) {
         Random ran = new Random();
         this.target =  targets.get(ran.nextInt(targets.size()));
@@ -323,8 +306,10 @@ public class Person {
         for (int i = 1; i < Board.nodes.size(); i++) {
             int x = Board.nodes.get(i).getX();
             int y = Board.nodes.get(i).getY();
-            if (Board.calculateDistance(fromX, x, fromY, y) < Board.calculateDistance(fromX, nearest.getX(), fromY, nearest.getY())) {
-                nearest = Board.nodes.get(i);
+            if (Board.calculateDistance(fromX, x, fromY, y) <= Board.calculateDistance(fromX, nearest.getX(), fromY, nearest.getY())) {
+                if(!Board.areWallsBehind(fromX, fromY, x, y)) {
+                    nearest = Board.nodes.get(i);
+                }
             }
         }
 		return nearest;
