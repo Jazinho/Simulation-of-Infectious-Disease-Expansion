@@ -25,10 +25,9 @@ public class Board extends JComponent implements MouseInputListener {
     private ArrayList<Person> persons;
     public static Cell[][] cells;
     private int size = 5;
-    private int editType = 0;   //  uzywane przy obsludze myszy
-    private int NUMBER_OF_AGENTS = 300;
+    private int editType = 0;
+    private int NUMBER_OF_AGENTS = 250;
 
-    //TODO wszystko co z mysza jest do wywalenia
 
     public Board(int width, int height) {
         int initWidth = (width / size) + 2;
@@ -167,7 +166,6 @@ public class Board extends JComponent implements MouseInputListener {
             y += gridSpace;
         }
 
-        
         for (x = 1; x < cells.length - 1; ++x) {
             for (y = 1; y < cells[x].length - 1; ++y) {
                 if (cells[x][y].getCellType() == CellType.FREE) {
@@ -187,10 +185,7 @@ public class Board extends JComponent implements MouseInputListener {
                 g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
             }
         }
-        for(Target target : targets){
-        	g.setColor(Color.MAGENTA);
-        	g.fillRect((target.getCell().getX() * size) + 1, (target.getCell().getY() * size) + 1, (size - 1), (size - 1));
-        }
+
         this.repaint();
     }
     
@@ -224,7 +219,6 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
-    // chyba wystarczy zostawic samo clicked, ale narazie niech siedzi
     public void mouseDragged(MouseEvent e) {
         int x = e.getX() / size;
         int y = e.getY() / size;
@@ -260,15 +254,10 @@ public class Board extends JComponent implements MouseInputListener {
         int x = ran.nextInt(270) +2;
         int y = ran.nextInt(130) +2;
         for (int i = 0; i < NUMBER_OF_AGENTS; i++) {
-            while (cells[x][y].getCellType() != CellType.FREE || isInterior(x,y)) {
+            while (cells[x][y].getCellType() != CellType.FREE) {
                 x = ran.nextInt(272)+1;
                 y = ran.nextInt(132)+1;
             }
-//            if(i % 10 == 0 ){
-//                persons.add(new Person(Health.INFECTED, x, y));
-//            }else{
-//                persons.add(new Person(Health.HEALTHY, x, y));
-//            }
             persons.add(new Person(Health.HEALTHY, x, y));
             cells[x][y].setCellType(CellType.PERSON);
         }
@@ -343,25 +332,22 @@ public class Board extends JComponent implements MouseInputListener {
         }
     }
 
-    private boolean isInterior(int x, int y){
-        boolean up=false, right=false, down=false, left=false;
-
-        for(int i=1; i<12;i++){
-            if((x+i) < 272) {
-                if (cells[x + i][y].getCellType() == CellType.WALL) right = true;
-            }
-            if((x - i) > 0) {
-                if (cells[x - i][y].getCellType() == CellType.WALL) left = true;
-            }
-            if((y - i) > 0) {
-                if (cells[x][y - i].getCellType() == CellType.WALL) down = true;
-            }
-            if((y + i) < 132) {
-                if (cells[x][y + i].getCellType() == CellType.WALL) up = true;
+    public static boolean areWallsBehind(int fromX, int fromY, int x, int y) {
+        if (fromX > x) {
+            int tmp = x;
+            x = fromX;
+            fromX = tmp;
+        }
+        if (fromY > y) {
+            int tmp = y;
+            y = fromY;
+            fromY = tmp;
+        }
+        for (int i = fromX; i <= x; i++) {
+            for (int j = fromY; j <= y; j++) {
+                if (Board.cells[i][j].getCellType() == CellType.WALL) return true;
             }
         }
-        if((up && left && right) || (down && left && right) || (left && up && down) || (right && up && down)) return true;
-        if(cells[x][y-1].getCellType() == CellType.WALL && cells[x][y+1].getCellType()==CellType.WALL) return true;
         return false;
     }
 
