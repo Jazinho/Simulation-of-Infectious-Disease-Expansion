@@ -23,6 +23,7 @@ public class Person {
 	private Node lastNode;
 	private int delayTime;
     private ArrayList<Node> visitedNodes;
+    private CellType tmp;
 
 	public Person(int x, int y){
 		this.x = x;
@@ -37,6 +38,7 @@ public class Person {
 		this.lastNode = this.currentNode;
 		this.delayTime = 0;
         this.visitedNodes = new ArrayList<>();
+        this.tmp = CellType.FREE;
 	}
 
 	public Person(Health health, int x, int y){
@@ -52,6 +54,7 @@ public class Person {
 		this.lastNode = this.currentNode;
 		this.delayTime = 0;
         this.visitedNodes = new ArrayList<>();
+        this.tmp = CellType.FREE;
 	}
 
     public void move() {
@@ -80,32 +83,32 @@ public class Person {
 
         if (Math.abs(destX - x) > Math.abs(destY - y)) {
             if (destX < x) {
-				if (Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE) {
+				if (Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.WALL) {
                     this.makeStep(7);
                 } else if (destX < y) {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.WALL)) {
                         this.makeStep(1);
                     } else {
                         this.makeStep(5);
                     }
                 } else {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.WALL)) {
                         this.makeStep(5);
                     } else {
                         this.makeStep(1);
                     }
                 }
             } else {
-                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE) {
+                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.WALL) {
                     this.makeStep(3);
                 } else if (destX < y) {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.WALL)) {
                         this.makeStep(1);
                     } else {
                         this.makeStep(5);
                     }
                 } else {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.WALL)) {
                         this.makeStep(5);
                     } else {
                         this.makeStep(1);
@@ -114,32 +117,32 @@ public class Person {
             }
         } else {
             if (destY < y) {
-                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE) {
+                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(1).getCellType() == CellType.WALL) {
                     this.makeStep(1);
                 } else if (destX < x) {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.WALL)) {
                         this.makeStep(7);
                     } else {
                         this.makeStep(3);
                     }
                 } else {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.WALL)) {
                         this.makeStep(3);
                     } else {
                         this.makeStep(7);
                     }
                 }
             } else {
-                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE) {
+                if (Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(5).getCellType() == CellType.WALL) {
                     this.makeStep(5);
                 } else if (destX < x) {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(7).getCellType() == CellType.WALL)) {
                         this.makeStep(7);
                     } else {
                         this.makeStep(3);
                     }
                 } else {
-                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE)) {
+                    if ((Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.FREE || Board.cells[this.getX()][this.getY()].getNeighbors().get(3).getCellType() == CellType.WALL)) {
                         this.makeStep(3);
                     } else {
                         this.makeStep(7);
@@ -183,10 +186,12 @@ public class Person {
 
     private void makeStep(int direction) {
         if (Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getCellType() != CellType.PERSON) {
+            Board.cells[this.getX()][this.getY()].setCellType(tmp);
+            tmp = Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getCellType();
         	Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).setCellType(CellType.PERSON);
         	int x = Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getX();
         	int y = Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getY();
-        	Board.cells[this.getX()][this.getY()].setCellType(CellType.FREE);
+        	//Board.cells[this.getX()][this.getY()].setCellType(CellType.FREE);
         	this.setX(x);
         	this.setY(y);
         }
