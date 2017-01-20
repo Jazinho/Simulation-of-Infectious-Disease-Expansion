@@ -58,7 +58,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		drawType.addActionListener(this);
 		drawType.setActionCommand("drawType");
 
-		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: ");
+		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: " + "Procent: ");
 
 		buttonPanel.add(start);
 		buttonPanel.add(drawType);
@@ -71,7 +71,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]);
+		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]+ "  Skutecznoœæ: " + Board.staty[3]+"%");
 
 		if (e.getSource().equals(timer)) {
 			iterNum++;
