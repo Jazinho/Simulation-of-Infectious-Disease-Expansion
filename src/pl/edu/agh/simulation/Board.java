@@ -19,7 +19,7 @@ import java.util.Random;
 @SuppressWarnings("serial")
 public class Board extends JComponent implements MouseInputListener {
 
-	public static Integer[] staty = {0,0,0};
+	public static Integer[] staty = {0,0,0,0};
     public static ArrayList<Target> targets;
     public static ArrayList<Node> nodes;
     private ArrayList<Person> persons;
@@ -55,8 +55,9 @@ public class Board extends JComponent implements MouseInputListener {
         	} else {
         		staty[2]++;
         	}
-        }
 
+        }
+        staty[3] = ((staty[1] + staty[2]) * 100 / persons.size());
         this.repaint();
     }
 
