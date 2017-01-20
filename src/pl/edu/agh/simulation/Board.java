@@ -26,7 +26,7 @@ public class Board extends JComponent implements MouseInputListener {
     public static Cell[][] cells;
     private int size = 5;
     private int editType = 0;
-    private int NUMBER_OF_AGENTS = 250;
+    private int NUMBER_OF_AGENTS = 400;
 
 
     public Board(int width, int height) {
@@ -275,15 +275,15 @@ public class Board extends JComponent implements MouseInputListener {
             ArrayList<Node> neighbourNodes = new ArrayList<>();
 
             while (up == false || right == false || down == false || left == false) {
-                if (up == false) {
-                    if (y_up < 1 || cells[x][y_up].getCellType() == CellType.WALL) {
-                        up = true;
+                if (left == false) {
+                    if (x_left < 1 || cells[x_left][y].getCellType() == CellType.WALL) {
+                        left = true;
                     } else {
-                        if (cells[x][y_up].getCellType() == CellType.NODE) {
-                            neighbourNodes.add(new Node(x, y_up));
-                            up = true;
+                        if (cells[x_left][y].getCellType() == CellType.NODE) {
+                            neighbourNodes.add(new Node(x_left, y));
+                            left = true;
                         } else {
-                            y_up -= 1;
+                            x_left -= 1;
                         }
                     }
                 }
@@ -299,6 +299,18 @@ public class Board extends JComponent implements MouseInputListener {
                         }
                     }
                 }
+                if (up == false) {
+                    if (y_up < 1 || cells[x][y_up].getCellType() == CellType.WALL) {
+                        up = true;
+                    } else {
+                        if (cells[x][y_up].getCellType() == CellType.NODE) {
+                            neighbourNodes.add(new Node(x, y_up));
+                            up = true;
+                        } else {
+                            y_up -= 1;
+                        }
+                    }
+                }
                 if (right == false) {
                     if (x_right > 273 || cells[x_right][y].getCellType() == CellType.WALL) {
                         right = true;
@@ -308,18 +320,6 @@ public class Board extends JComponent implements MouseInputListener {
                             right = true;
                         } else {
                             x_right += 1;
-                        }
-                    }
-                }
-                if (left == false) {
-                    if (x_left < 1 || cells[x_left][y].getCellType() == CellType.WALL) {
-                        left = true;
-                    } else {
-                        if (cells[x_left][y].getCellType() == CellType.NODE) {
-                            neighbourNodes.add(new Node(x_left, y));
-                            left = true;
-                        } else {
-                            x_left -= 1;
                         }
                     }
                 }
