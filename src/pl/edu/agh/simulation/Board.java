@@ -22,7 +22,7 @@ public class Board extends JComponent implements MouseInputListener {
 	public static Integer[] staty = {0,0,0,0};
     public static ArrayList<Target> targets;
     public static ArrayList<Node> nodes;
-    private ArrayList<Person> persons;
+    public static ArrayList<Person> persons;
     public static Cell[][] cells;
     private int size = 5;
     private int editType = 0;
@@ -190,7 +190,7 @@ public class Board extends JComponent implements MouseInputListener {
         this.repaint();
     }
     
-    public Person getPerson(int x, int y){
+    public static Person getPerson(int x, int y){
     	for(int it = 0; it < persons.size(); it++){
     		if(persons.get(it).getX() == x && persons.get(it).getY() == y){
     			return persons.get(it);

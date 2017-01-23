@@ -191,7 +191,6 @@ public class Person {
         	Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).setCellType(CellType.PERSON);
         	int x = Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getX();
         	int y = Board.cells[this.getX()][this.getY()].getNeighbors().get(direction).getY();
-        	//Board.cells[this.getX()][this.getY()].setCellType(CellType.FREE);
         	this.setX(x);
         	this.setY(y);
         }

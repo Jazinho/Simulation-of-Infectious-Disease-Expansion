@@ -1,8 +1,6 @@
 package pl.edu.agh.simulation;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -29,6 +27,9 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private final int initDelay = 100;
 	private boolean running = false;
 	private JLabel statistics;
+	private JFrame heatmapFrame;
+	private JButton heatmapButton;
+	private Heatmap heatmapPanel;
 
 	public GUI(JFrame jf) {
 		frame = jf;
@@ -45,6 +46,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		start = new JButton("Start");
 		start.setActionCommand("Start");
 		start.addActionListener(this);
+
+		heatmapButton = new JButton("Show/close heat map");
+		heatmapButton.setActionCommand("Heatmap");
+		heatmapButton.addActionListener(this);
 
 		pred = new JSlider();
 		pred.setMinimum(0);
@@ -64,14 +69,23 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		buttonPanel.add(drawType);
 		buttonPanel.add(pred);
 		buttonPanel.add(statistics);
+		buttonPanel.add(heatmapButton);
 
 		board = new Board(660, 1360);
 		container.add(board, BorderLayout.CENTER);
 		container.add(buttonPanel, BorderLayout.SOUTH);
+
+		heatmapPanel = new Heatmap();
+		heatmapFrame = new JFrame();
+		heatmapFrame.setTitle("Heat Map");
+		heatmapFrame.setSize(555,280);
+		heatmapFrame.setLocation(730,380);
+		heatmapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		heatmapFrame.getContentPane().add(heatmapPanel, BorderLayout.CENTER);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]+ "  Skutecznoœæ: " + Board.staty[3]+"%");
+		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]+ "  Skutecznoï¿½ï¿½: " + Board.staty[3]+"%");
 
 		if (e.getSource().equals(timer)) {
 			iterNum++;
@@ -92,6 +106,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 			} else if (command.equals("drawType")) {
 				int newType = (Integer) drawType.getSelectedItem();
 				board.setEditType(newType);
+			} else if ( command.equals("Heatmap")){
+				if(heatmapFrame.isVisible()){
+					heatmapFrame.setVisible(false);
+				}else{
+					heatmapFrame.setVisible(true);
+				}
 			}
 
 		}
