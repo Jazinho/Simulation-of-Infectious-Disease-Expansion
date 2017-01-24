@@ -20,11 +20,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private Board board;
 	private JButton start;
 	private JComboBox<Integer> drawType;
+	private JComboBox<String> conditions;
 	private JSlider pred;
 	private JFrame frame;
 	private int iterNum = 0;
 	private final int maxDelay = 500;
-	private final int initDelay = 100;
+	private final int initDelay = 0;
 	private boolean running = false;
 	private JLabel statistics;
 	private JFrame heatmapFrame;
@@ -63,10 +64,18 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		drawType.addActionListener(this);
 		drawType.setActionCommand("drawType");
 
+		String[] diseaseConditions = { "normal", "+20% of resistance", "-20% of resistance", "-25% of contamination",
+				"+25% of contamination" };
+
+		conditions = new JComboBox<String>(diseaseConditions);
+		conditions.addActionListener(this);
+		conditions.setActionCommand("conditions");
+
 		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: " + "Procent: ");
 
 		buttonPanel.add(start);
 		buttonPanel.add(drawType);
+		buttonPanel.add(conditions);
 		buttonPanel.add(pred);
 		buttonPanel.add(statistics);
 		buttonPanel.add(heatmapButton);
@@ -78,14 +87,15 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		heatmapPanel = new Heatmap();
 		heatmapFrame = new JFrame();
 		heatmapFrame.setTitle("Heat Map");
-		heatmapFrame.setSize(555,280);
-		heatmapFrame.setLocation(730,380);
+		heatmapFrame.setSize(555, 280);
+		heatmapFrame.setLocation(730, 380);
 		heatmapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		heatmapFrame.getContentPane().add(heatmapPanel, BorderLayout.CENTER);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]+ "  Skutecznoï¿½ï¿½: " + Board.staty[3]+"%");
+		statistics.setText("Zdrowi: " + Board.staty[0] + "  Chorzy: " + Board.staty[1] + "  Odporni: " + Board.staty[2]
+				+ "  Procent zachorowañ: " + Board.staty[3] + "%");
 
 		if (e.getSource().equals(timer)) {
 			iterNum++;
@@ -106,10 +116,12 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 			} else if (command.equals("drawType")) {
 				int newType = (Integer) drawType.getSelectedItem();
 				board.setEditType(newType);
-			} else if ( command.equals("Heatmap")){
-				if(heatmapFrame.isVisible()){
+			} else if (command.equals("conditions")) {
+				Disease.updateDisease(conditions.getSelectedIndex());
+			} else if (command.equals("Heatmap")) {
+				if (heatmapFrame.isVisible()) {
 					heatmapFrame.setVisible(false);
-				}else{
+				} else {
 					heatmapFrame.setVisible(true);
 				}
 			}
@@ -119,7 +131,5 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 
 	public void stateChanged(ChangeEvent e) {
 		timer.setDelay(maxDelay - pred.getValue());
-		// tutaj zmieniam statystyki ???? TODO
-
 	}
 }

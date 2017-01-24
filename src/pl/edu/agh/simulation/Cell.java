@@ -63,7 +63,7 @@ public class Cell {
     }
 
     public enum CellType {
-        FREE, WALL, PERSON, NODE;
+		FREE, WALL, PERSON, NODE;
     }
 
     public int getTimeOfContamination() {

@@ -2,7 +2,6 @@ package pl.edu.agh.simulation;
 
 public class Target {
 
-	// TODO target musi przechowywaæ informacjê o nabli¿szym sobie wêŸle
     private Cell cell;
     private boolean isSafe;
     private int delayTime;

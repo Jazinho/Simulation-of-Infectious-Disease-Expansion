@@ -1,4 +1,5 @@
 package pl.edu.agh.simulation;
+
 import javax.swing.JFrame;
 
 public class Program extends JFrame {
@@ -13,7 +14,7 @@ public class Program extends JFrame {
 		gof = new GUI(this);
 		gof.initialize(this.getContentPane());
 		this.setSize(1300, 700);
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 	}
 
