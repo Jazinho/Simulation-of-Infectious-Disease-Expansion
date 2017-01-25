@@ -35,8 +35,7 @@ public class Board extends JComponent implements MouseInputListener {
 		addMouseMotionListener(this);
 		setBackground(Color.WHITE);
 		setOpaque(false);
-		initialize(initWidth, initHeight); // tworzy tablice punktow o rozmiarze
-											// 274 x 134
+		initialize(initWidth, initHeight);
 	}
 
 	public static double calculateDistance(int fromX, int toX, int fromY, int toY) {
@@ -56,22 +55,12 @@ public class Board extends JComponent implements MouseInputListener {
 			} else {
 				staty[2]++;
 			}
-
 		}
 		staty[3] = ((staty[1] + staty[2]) * 100 / persons.size());
 		this.repaint();
 	}
 
-	public void clear() {
-		for (int x = 0; x < cells.length; ++x)
-			for (int y = 0; y < cells[x].length; ++y) {
-				cells[x][y].clear();
-			}
-		this.repaint();
-	}
-
-	private void initialize(int height, int width) { // tworzy tablice punktow o
-														// rozmiarze 274 x 134
+	private void initialize(int height, int width) {
 		cells = new Cell[width][height];
 		nodes = new ArrayList<Node>();
 		persons = new ArrayList<Person>();
@@ -237,10 +226,6 @@ public class Board extends JComponent implements MouseInputListener {
 		}
 	}
 
-	// sasiedzi indeksowani sa kolejno: 0- lewy gorny, 1- gorny, 2-prawy gorny,
-	// 3-prawy, 4-prawy dolny, 5-dolny, 6-lewy dolny, 7-lewy
-	// poki co wykorzystywani w Cell:move() sa tylko czterej glowni sasiedzi,
-	// takze poni�sze dodanie wszystkich osmiu jest troche na wyrost
 	private ArrayList<Cell> generateNeighbours(int x, int y) {
 		ArrayList<Cell> neighbours = new ArrayList<>();
 		neighbours.add(cells[x - 1][y - 1]);

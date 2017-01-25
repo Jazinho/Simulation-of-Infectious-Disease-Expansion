@@ -7,10 +7,16 @@ public class Target {
     private int delayTime;
     private Node nearestNode;
 
-    public Target() {
+    public Target() { }
 
+    public Target(int x, int y, boolean isSafe, int delayTime) {
+        super();
+        this.cell = new Cell(x, y);
+        this.isSafe = isSafe;
+        this.delayTime = delayTime;
+        this.nearestNode = Person.setFirstNode(x,y);
     }
-
+    
     public boolean isSafe() {
         return isSafe;
     }
@@ -37,14 +43,6 @@ public class Target {
     
     public Node getNearestNode(){
     	return nearestNode;
-    }
-
-    public Target(int x, int y, boolean isSafe, int delayTime) {
-        super();
-        this.cell = new Cell(x, y);
-        this.isSafe = isSafe;
-        this.delayTime = delayTime;
-        this.nearestNode = Person.setFirstNode(x,y);
     }
 
 }

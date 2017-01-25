@@ -2,21 +2,6 @@ package pl.edu.agh.simulation;
 
 public final class Disease {
 
-	// startowe
-	// oko³o 40-50%
-
-	// szczepionka, +20% do odpornosci
-	// poni¿ej 5%
-
-	// z³e warunki pogodowe, -20% do odpornosci
-	// powyzej 90%
-
-	// sucha aura -> zarazki krocej utrzymuja sie w powietrzu o 25%
-	// ponizej 10%
-
-	// mokro -> dluzej zarazki sa w powietrzu o 25%
-	// powyzej 90%
-
 	public static int cellContaminationTime = 20;
 	public static int spreadingTime = 80;
 	public static int incubationTime = 1;

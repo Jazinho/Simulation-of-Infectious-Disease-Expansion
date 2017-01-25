@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class GUI extends JPanel implements ActionListener, ChangeListener {
+	
 	private static final long serialVersionUID = 1L;
 	private Timer timer;
 	private Board board;
@@ -58,8 +59,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		pred.addChangeListener(this);
 		pred.setValue(maxDelay - timer.getDelay());
 
-		Integer[] comboBoxTypes = { 0, 1, 2, 3 }; // puste pole, sciana, zdrowy,
-													// chory
+		Integer[] comboBoxTypes = { 0, 1, 2, 3 }; // puste pole, sciana, zdrowy, chory
+
 		drawType = new JComboBox<Integer>(comboBoxTypes);
 		drawType.addActionListener(this);
 		drawType.setActionCommand("drawType");
@@ -71,7 +72,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 		conditions.addActionListener(this);
 		conditions.setActionCommand("conditions");
 
-		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: " + "Procent: ");
+		statistics = new JLabel("Zdrowi: " + "Chorzy: " + "Odporni: " + "Procent zachorowañ: ");
 
 		buttonPanel.add(start);
 		buttonPanel.add(drawType);
@@ -103,29 +104,35 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 			board.iteration();
 		} else {
 			String command = e.getActionCommand();
-			if (command.equals("Start")) {
-				if (!running) {
-					timer.start();
-					start.setText("Pause");
-				} else {
-					timer.stop();
-					start.setText("Start");
-				}
-				running = !running;
-
-			} else if (command.equals("drawType")) {
-				int newType = (Integer) drawType.getSelectedItem();
-				board.setEditType(newType);
-			} else if (command.equals("conditions")) {
-				Disease.updateDisease(conditions.getSelectedIndex());
-			} else if (command.equals("Heatmap")) {
-				if (heatmapFrame.isVisible()) {
-					heatmapFrame.setVisible(false);
-				} else {
-					heatmapFrame.setVisible(true);
-				}
+			switch(command){
+				case "Start": 
+					if (!running) {
+						timer.start();
+						start.setText("Pause");
+					} else {
+						timer.stop();
+						start.setText("Start");
+					}
+					running = !running;
+					break;
+					
+				case "drawType":
+					int newType = (Integer) drawType.getSelectedItem();
+					board.setEditType(newType);
+					break;
+					
+				case "conditions":
+					Disease.updateDisease(conditions.getSelectedIndex());
+					break;
+					
+				case "Heatmap":
+					if (heatmapFrame.isVisible()) {
+						heatmapFrame.setVisible(false);
+					} else {
+						heatmapFrame.setVisible(true);
+					}
+					break;
 			}
-
 		}
 	}
 

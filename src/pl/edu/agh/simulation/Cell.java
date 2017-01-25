@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 public class Cell {
 
+    public enum CellType {
+		FREE, WALL, PERSON, NODE;
+    }
+    
     private ArrayList<Cell> neighbors;
     private CellType cellType;
-    private boolean isInterior;
     private int x;
     private int y;
     private int timeOfContamination;
@@ -21,9 +24,6 @@ public class Cell {
         neighbors = new ArrayList<Cell>();
         this.x = x;
         this.y = y;
-    }
-
-    public void clear() {
     }
 
     public void addNeighbor(Cell nei) {
@@ -60,10 +60,6 @@ public class Cell {
 
     public void setCellType(CellType cellType) {
         this.cellType = cellType;
-    }
-
-    public enum CellType {
-		FREE, WALL, PERSON, NODE;
     }
 
     public int getTimeOfContamination() {

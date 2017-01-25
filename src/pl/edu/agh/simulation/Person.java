@@ -21,7 +21,6 @@ public class Person {
 	private Target target;
 	private Node currentNode;
 	private Node lastNode;
-	// private int delayTime;
 	private ArrayList<Node> visitedNodes;
 	private CellType tmp;
 
@@ -36,7 +35,6 @@ public class Person {
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = this.currentNode;
-		// this.delayTime = 0;
 		this.visitedNodes = new ArrayList<>();
 		this.tmp = CellType.FREE;
 	}
@@ -52,7 +50,6 @@ public class Person {
 		this.setTarget(Board.targets);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = this.currentNode;
-		// this.delayTime = 0;
 		this.visitedNodes = new ArrayList<>();
 		this.tmp = CellType.FREE;
 	}
@@ -68,7 +65,6 @@ public class Person {
 		this.target = Board.targets.get(target);
 		this.currentNode = setFirstNode(x, y);
 		this.lastNode = this.currentNode;
-		// this.delayTime = 0;
 		this.visitedNodes = new ArrayList<>();
 		this.tmp = CellType.FREE;
 	}
@@ -80,8 +76,8 @@ public class Person {
 		if (this.getTarget().getNearestNode() == this.getLastNode()) {
 			destX = this.getTarget().getCell().getX();
 			destY = this.getTarget().getCell().getY();
-			// jesli osiagnieto cel to znajdz nowy i wroc na trase do tego
-			// samego node'a
+			
+			// jesli osiagnieto cel to znajdz nowy i wroc na trase do tego samego node'a
 			if (x == this.getTarget().getCell().getX() && y == this.getTarget().getCell().getY()) {
 				this.setTarget(Board.targets);
 				this.setCurrentNode(lastNode);
@@ -202,12 +198,7 @@ public class Person {
 				timeToIncubate = 0;
 			}
 		} else if (health == Health.HEALTHY) { // GREEN
-			if (Board.cells[getX()][getY()].getTimeOfContamination() > 0) { // jesli
-																			// w
-																			// komorce
-																			// sa
-																			// obecne
-																			// bakterie
+			if (Board.cells[getX()][getY()].getTimeOfContamination() > 0) { // jesli w komorce sa obecne bakterie
 				timeToInfect += 1;
 				if (timeToInfect == Disease.spreadingTime) {
 					health = Health.INFECTED;
@@ -259,14 +250,14 @@ public class Person {
 			double currentShorter = -1;
 			boolean selectedUnvisitedNode = false;
 
-			for (int i = 0; i < this.getCurrentNode().getNeighbourNodes().size(); i++) {
-				int checkedX = this.getCurrentNode().getNeighbourNodes().get(i).getX();
-				int checkedY = this.getCurrentNode().getNeighbourNodes().get(i).getY();
+			for (Node node : this.getCurrentNode().getNeighbourNodes()){
+				int checkedX = node.getX();
+				int checkedY = node.getY();
 				if (!wasVisited(checkedX, checkedY)) {
 					if (Board.calculateDistance(checkedX, targetX, checkedY, targetY) < currentShorter
 							|| currentShorter == -1) {
 						currentShorter = Board.calculateDistance(checkedX, targetX, checkedY, targetY);
-						newNode = this.getCurrentNode().getNeighbourNodes().get(i);
+						newNode = node;
 						selectedUnvisitedNode = true;
 					}
 				}
